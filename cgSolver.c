@@ -88,90 +88,91 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    SistLinear_t *SL;           // Sistema Linear 
+    Coeficientes_t *A_trasp;
+    SL = alocarSisLin(tamanhoSL, k_diagonais, pre_condicionador);
+    initSistLinear(SL);
+    A_trasp = calcularTransposta(SL);
+    prnCoef(stderr, SL->A, SL->n, SL->k);
+    prnCoef(stderr, A_trasp, SL->n, SL->k);
 
     /*Variaveis*/
-    FILE *arq_saida = fopen(argumentos[5],"w+");
-    SistLinear_t *SL;           // Sistema Linear 
-    real_t *x;                  // Vetor de incógnitas
-    real_t *residuo;            // Resíduo
-    real_t tempo;               // Tempo médio do método
-    real_t tempo_norma;         // Tempo para o cálculo da norma
+    //FILE *arq_saida = fopen(argumentos[5],"w+");
+    // real_t *x;                  // Vetor de incógnitas
+    // real_t *residuo;            // Resíduo
+    // real_t tempo;               // Tempo médio do método
+    // real_t tempo_norma;         // Tempo para o cálculo da norma
     
 
-    /*Inicialização das variáveis*/
-    residuo = (real_t*)alocarVetor(tamanhoSL, sizeof(real_t));
-    SL = alocarSisLin(tamanhoSL, k_diagonais, pre_condicionador);
-    x = (real_t *)alocarVetor(tamanhoSL, sizeof(real_t));
-    initSisLin(SL);
+    // /*Inicialização das variáveis*/
+    // residuo = (real_t*)alocarVetor(tamanhoSL, sizeof(real_t));
+    // SL = alocarSisLin(tamanhoSL, k_diagonais, pre_condicionador);
+    // x = (real_t *)alocarVetor(tamanhoSL, sizeof(real_t));
+    // initSisLin(SL);
 
-    fprintf(arq_saida, "# ghs19 Giordano Henrique Silveira\n");
-    fprintf(arq_saida, "# grpp19 Gabriel Razzolini Pires de Paula\n\n");
+    // fprintf(arq_saida, "# ghs19 Giordano Henrique Silveira\n");
+    // fprintf(arq_saida, "# grpp19 Gabriel Razzolini Pires de Paula\n\n");
     
-    // Verifica se o usuário quer o método sem ou com pré-condicionador
-    if (pre_condicionador <= 0) {
+    // // Verifica se o usuário quer o método sem ou com pré-condicionador
+    // if (pre_condicionador <= 0) {
 
-        if (flagD)
-            tornarDiagonalDominante(SL);
+    //     if (flagD)
+    //         tornarDiagonalDominante(SL);
 
-        #ifdef SISLIN
-            FILE *arq = fopen("matriz_inicial_s_pre.txt", "w+");
-            fprintf(arq, "Sistema antes da aplicação do método\n");
-            prnSisLin(arq, SL);
-            fclose(arq);
-        #endif
+    //     #ifdef SISLIN
+    //         FILE *arq = fopen("matriz_inicial_s_pre.txt", "w+");
+    //         fprintf(arq, "Sistema antes da aplicação do método\n");
+    //         prnSisLin(arq, SL);
+    //         fclose(arq);
+    //     #endif
 
-        gradienteConjugadoSPreCondicionadores(arq_saida, &tempo, SL, x, erro, nInteracoes);
+    //     gradienteConjugadoSPreCondicionadores(arq_saida, &tempo, SL, x, erro, nInteracoes);
 
-        #ifdef SISLIN
-            FILE *arq2 = fopen("matriz_final_s_pre.txt", "w+");
-            fprintf(arq2, "Sistema depois da aplicação do método\n");
-            prnSisLin(arq2, SL);
-            fclose(arq2);
-        #endif
+    //     #ifdef SISLIN
+    //         FILE *arq2 = fopen("matriz_final_s_pre.txt", "w+");
+    //         fprintf(arq2, "Sistema depois da aplicação do método\n");
+    //         prnSisLin(arq2, SL);
+    //         fclose(arq2);
+    //     #endif
 
-        calcularResiduo(SL->A, residuo, SL->b, x, SL->n);
-        real_t norma_residuo = calcularNormaL2Residuo(SL, residuo, &tempo_norma);
-        fprintf(arq_saida, "# resíduo: %.15g\n", norma_residuo);
-    }
-    else {
-        real_t tempo_pre_cond;  //Tempo da preparação das matrizes para o cálculo do método com pré-condicionadores
+    //     calcularResiduo(SL->A, residuo, SL->b, x, SL->n);
+    //     real_t norma_residuo = calcularNormaL2Residuo(SL, residuo, &tempo_norma);
+    //     fprintf(arq_saida, "# resíduo: %.15g\n", norma_residuo);
+    // }
+    // else {
+    //     real_t tempo_pre_cond;  //Tempo da preparação das matrizes para o cálculo do método com pré-condicionadores
 
-        if (flagD)
-            tornarDiagonalDominante(SL);
+    //     if (flagD)
+    //         tornarDiagonalDominante(SL);
         
-        #ifdef SISLIN
-            FILE *arq = fopen("matriz_inicial_c_pre.txt", "w+");
-            fprintf(arq, "Sistema antes da aplicação do método\n");
-            prnSisLin(arq, SL);
-            fclose(arq);
-        #endif
+    //     #ifdef SISLIN
+    //         FILE *arq = fopen("matriz_inicial_c_pre.txt", "w+");
+    //         fprintf(arq, "Sistema antes da aplicação do método\n");
+    //         prnSisLin(arq, SL);
+    //         fclose(arq);
+    //     #endif
 
-        gradienteConjugadosCPreCondicionadores(arq_saida, SL, x, &tempo, &tempo_pre_cond, erro, nInteracoes);
+    //     gradienteConjugadosCPreCondicionadores(arq_saida, SL, x, &tempo, &tempo_pre_cond, erro, nInteracoes);
 
-        #ifdef SISLIN
-            FILE *arq2 = fopen("matriz_final_c_pre.txt", "w+");
-            fprintf(arq2, "Sistema depois da aplicação do método\n");
-            prnSisLin(arq2, SL);
-            fclose(arq2);
-        #endif
+    //     #ifdef SISLIN
+    //         FILE *arq2 = fopen("matriz_final_c_pre.txt", "w+");
+    //         fprintf(arq2, "Sistema depois da aplicação do método\n");
+    //         prnSisLin(arq2, SL);
+    //         fclose(arq2);
+    //     #endif
 
-        calcularResiduo(SL->A, residuo, SL->b, x, SL->n);
-        real_t norma_residuo = calcularNormaL2Residuo(SL, residuo, &tempo_norma);
-        fprintf(arq_saida, "# resíduo: %.15g\n", norma_residuo);
-        fprintf(arq_saida, "# Tempo PC: %.15g\n", tempo_pre_cond);
-    }
+    //     calcularResiduo(SL->A, residuo, SL->b, x, SL->n);
+    //     real_t norma_residuo = calcularNormaL2Residuo(SL, residuo, &tempo_norma);
+    //     fprintf(arq_saida, "# resíduo: %.15g\n", norma_residuo);
+    //     fprintf(arq_saida, "# Tempo PC: %.15g\n", tempo_pre_cond);
+    // }
 
-    fprintf(arq_saida, "# Tempo iter: %.15g\n", tempo);
-    fprintf(arq_saida, "# Tempo norma: %.15g\n", tempo_norma);
-    fprintf(arq_saida, "%d", SL->n);
-    prnVetor(arq_saida, x, (unsigned int)SL->n);
+    // fprintf(arq_saida, "# Tempo iter: %.15g\n", tempo);
+    // fprintf(arq_saida, "# Tempo norma: %.15g\n", tempo_norma);
+    // fprintf(arq_saida, "%d", SL->n);
+    // prnVetor(arq_saida, x, (unsigned int)SL->n);
 
 
-    fclose(arq_saida);
-    liberarVetor(residuo);
-    liberarVetor(x);
-    liberarSisLin(SL);
-    liberarVetor(flags);
-
+    // fclose(arq_saida);
     return 0;
 }

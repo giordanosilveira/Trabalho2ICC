@@ -4,14 +4,23 @@
 
 typedef double real_t;
 
+typedef struct {
+    real_t *diagonal_princial;      //Diagonal principal
+    real_t **diagonais_inferiores;  //Diagonais inferiores
+    real_t **diagonais_superiores;  //Diagonais superiores 
+} Coeficientes_t;
+
+
 typedef struct
 {
-    real_t **A;     // Matriz de coeficientes
-    real_t *b;      // termos independentes
-    unsigned int n; // tamanho do sistema linear
-    unsigned int k; // k diagonais
-    unsigned int p; // pré condicionador de jacobi
+    Coeficientes_t *A;              //Coeficientes   
+    real_t *b;                      // termos independentes
+    unsigned int n;                 // tamanho do sistema linear
+    unsigned int k;                 // k diagonais
+    unsigned int p;                 // pré condicionador de jacobi
+
 } SistLinear_t;
+
 
 //Representa as estruturas internas (não todas) usadas dentro do cálculo do método
 typedef struct {
@@ -28,63 +37,63 @@ typedef struct {
 } Gradiente_t;          //Representa as estruturas internas (não todas) usadas dentro do cálculo do método
 
 
-/**
- * @brief Libera a estrutura apontada por 'grad'
- * 
- * @param grad (Gradiente_t*) : Ponteiro para a estrutura gradiente.
- */
-void liberarGradientes(Gradiente_t *grad);
+// /**
+//  * @brief Libera a estrutura apontada por 'grad'
+//  * 
+//  * @param grad (Gradiente_t*) : Ponteiro para a estrutura gradiente.
+//  */
+// void liberarGradientes(Gradiente_t *grad);
 
 
-/**
- * @brief Aloca espaço na memória para o tipo Grandiente e sua estruturas internas
- * 
- * @param n (unsigned int) : Tamanho do dos vetores.
- * @return (Gradiente_t*) : Ponteiro para essa estrutura. 
- */
-Gradiente_t* alocarGradiente(unsigned int n);
+// /**
+//  * @brief Aloca espaço na memória para o tipo Grandiente e sua estruturas internas
+//  * 
+//  * @param n (unsigned int) : Tamanho do dos vetores.
+//  * @return (Gradiente_t*) : Ponteiro para essa estrutura. 
+//  */
+// Gradiente_t* alocarGradiente(unsigned int n);
 
 
-/**
- * @brief Modifica os coeficientes da matriz A do sistema linear
- * para que ela fique diagonal dominante.
- * 
- * @param SL (SistLinear_t*) : O Sistema Linear.
- */
-void tornarDiagonalDominante(SistLinear_t *SL);
+// /**
+//  * @brief Modifica os coeficientes da matriz A do sistema linear
+//  * para que ela fique diagonal dominante.
+//  * 
+//  * @param SL (SistLinear_t*) : O Sistema Linear.
+//  */
+// void tornarDiagonalDominante(SistLinear_t *SL);
 
 
-/**
- * @brief Calcula o resíduo.
- * 
- * @param coef (real_t**) : Coeficientes do sistema linear.
- * @param residuo (real_t*) : Vetor onde será colocado o resíduo.
- * @param b (real_t*) : Termos independentes.
- * @param x (real_t*) : Vetor com as soluções.
- * @param n (unsigned int) : Tamanho do vetor.
- */
-void calcularResiduo(real_t**coef, real_t *residuo, real_t*b, real_t *x, int n);
+// /**
+//  * @brief Calcula o resíduo.
+//  * 
+//  * @param coef (real_t**) : Coeficientes do sistema linear.
+//  * @param residuo (real_t*) : Vetor onde será colocado o resíduo.
+//  * @param b (real_t*) : Termos independentes.
+//  * @param x (real_t*) : Vetor com as soluções.
+//  * @param n (unsigned int) : Tamanho do vetor.
+//  */
+// void calcularResiduo(real_t**coef, real_t *residuo, real_t*b, real_t *x, int n);
 
 
-/**
- * @brief Transforma o termos independentes para ser possível efetuar
- * o método dos Gradientes Conjugados. Isto é, A^t (Coeficientes) x B (Termos independentes).
- * 
- * @param SL (SistLinear_t) : O Sistema Linear.
- * @return (real_t*) : O resultado de b vezes A^t 
- */
-real_t *calcularAtxB(SistLinear_t *SL);
+// /**
+//  * @brief Transforma o termos independentes para ser possível efetuar
+//  * o método dos Gradientes Conjugados. Isto é, A^t (Coeficientes) x B (Termos independentes).
+//  * 
+//  * @param SL (SistLinear_t) : O Sistema Linear.
+//  * @return (real_t*) : O resultado de b vezes A^t 
+//  */
+// real_t *calcularAtxB(SistLinear_t *SL);
 
 
-/**
- * @brief Efetua uma multiplcação de matrizes entre a matriz transposta 
- * A e A. Essa transformação é necessária para ser possível efetuar o métodos dos
- * Gradientes conjugados.
- * 
- * @param SL (SistLinear_t*) : Ponteiro para o sistema linear.
- * @return (real_t**) : Matriz resultante da multiplicação. 
- */
-real_t **calcularMatrizAtxA(SistLinear_t* SL);
+// /**
+//  * @brief Efetua uma multiplcação de matrizes entre a matriz transposta 
+//  * A e A. Essa transformação é necessária para ser possível efetuar o métodos dos
+//  * Gradientes conjugados.
+//  * 
+//  * @param SL (SistLinear_t*) : Ponteiro para o sistema linear.
+//  * @return (real_t**) : Matriz resultante da multiplicação. 
+//  */
+// real_t **calcularMatrizAtxA(SistLinear_t* SL);
 
 
 /**
@@ -94,6 +103,16 @@ real_t **calcularMatrizAtxA(SistLinear_t* SL);
  * @param SL (SistLinear_t*) : O Sistema Linear
  */
 void prnSisLin(FILE * arq_saida, SistLinear_t *SL);
+
+/**
+ * @brief 
+ * 
+ * @param arq_saida 
+ * @param A 
+ * @param n 
+ * @param k 
+ */
+void prnCoef(FILE* arq_saida, Coeficientes_t *A, unsigned int n, unsigned int k);
 
 /**
  * @brief Libera as estruturas do sistema linear
@@ -117,6 +136,15 @@ SistLinear_t *alocarSisLin(unsigned int n, unsigned int k, unsigned int p);
  *
  * @param SL (SistLinear_t *) : O sistema linear
  */
-void initSisLin(SistLinear_t *SL);
+void initSistLinear(SistLinear_t *SL);
+
+/**
+ * @brief 
+ * 
+ * @param n 
+ * @param k 
+ * @return Coeficientes_t* 
+ */
+Coeficientes_t *alocarCoeficiente(unsigned int n, unsigned int k);
 
 #endif
