@@ -122,30 +122,30 @@ void *alocarVetor(int tamanho, int size)
     return v;
 }
 
-Coeficientes_t *calcularTransposta(SistLinear_t *orig){
+// Coeficientes_t *calcularTransposta(SistLinear_t *orig){
 
-    Coeficientes_t *orig_transp = alocarCoeficiente(orig->n, orig->k);
-    if (! orig_transp) {
-        perror("Não foi possível alocar espaço para a matriz transposta");
-        return NULL;
-    }
+//     Coeficientes_t *orig_transp = alocarCoeficiente(orig->n, orig->k);
+//     if (! orig_transp) {
+//         perror("Não foi possível alocar espaço para a matriz transposta");
+//         return NULL;
+//     }
 
-    for (int i = 0; i < (orig->k / 2); ++i){
-        for (int j = 0; j < orig->n; ++j) {
-            if (j + i + 1 < orig->n) {
-                orig_transp->diagonais_superiores[i][j] = orig->A->diagonais_inferiores[i][j + i + 1];
-                orig_transp->diagonais_inferiores[i][j + i + 1] = orig->A->diagonais_superiores[i][j];
-            }
-        } 
-    }
+//     for (int i = 0; i < (orig->k / 2); ++i){
+//         for (int j = 0; j < orig->n; ++j) {
+//             if (j + i + 1 < orig->n) {
+//                 orig_transp->diagonais_superiores[i][j] = orig->A->diagonais_inferiores[i][j + i + 1];
+//                 orig_transp->diagonais_inferiores[i][j + i + 1] = orig->A->diagonais_superiores[i][j];
+//             }
+//         } 
+//     }
    
-    for (int j = 0; j < orig->n; ++j) {
-        orig_transp->diagonal_princial[j] = orig->A->diagonal_princial[j];
-    } 
+//     for (int j = 0; j < orig->n; ++j) {
+//         orig_transp->diagonal_princial[j] = orig->A->diagonal_princial[j];
+//     } 
     
 
-    return orig_transp;
-}
+//     return orig_transp;
+// }
 
 // void liberarVetor(void *v){
 //     if (v)
@@ -161,29 +161,28 @@ Coeficientes_t *calcularTransposta(SistLinear_t *orig){
 // }
 
 
-// real_t **alocarMatriz(unsigned int n, unsigned int tam_ptr, unsigned int tam_ele) {
+real_t **alocarMatriz(unsigned int n, unsigned int k, unsigned int tam_ptr, unsigned int tam_ele) {
 
-//     real_t **A;
+    real_t **A;
     
-//     A = malloc(n*tam_ptr);
-//     if (! A) {
-//         fprintf(stderr, "Não foi possível alocar espaço para o vetor de ponteiros\n");
-//         exit(1);
-//     }
+    A = malloc(n*tam_ptr);
+    if (A) {
+        
+        A[0] = (real_t*)calloc(n*k, tam_ele);
+        if (!A[0]) {
+            fprintf(stderr, "Não foi possível alocar espaço para o vetor de elementos\n");
+            return NULL;
+        }
+        
+        for (int i = 1; i < n; ++i) {
+            A[i] = A[0] + i * k;
+        }
 
-//     A[0] = (real_t*)calloc(n*n, tam_ele);
-//     if (!A[0]) {
-//         fprintf(stderr, "Não foi possível alocar espaço para o vetor de elementos\n");
-//         free(A);
-//         exit(1);
-//     }
-
-//     for (int i = 1; i < n; ++i) {
-//         A[i] = A[i - 1] + n;
-//     }
-
-//     return A;
-// }
+        
+    }
+    return A;
+    
+}
 
 
 // void cpyMatriz(real_t**dest, real_t**ori, unsigned int n) {

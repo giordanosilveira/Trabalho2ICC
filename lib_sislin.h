@@ -4,16 +4,10 @@
 
 typedef double real_t;
 
-typedef struct {
-    real_t *diagonal_princial;      //Diagonal principal
-    real_t **diagonais_inferiores;  //Diagonais inferiores
-    real_t **diagonais_superiores;  //Diagonais superiores 
-} Coeficientes_t;
-
 
 typedef struct
 {
-    Coeficientes_t *A;              //Coeficientes   
+    real_t **A;                     //Coeficientes   
     real_t *b;                      // termos independentes
     unsigned int n;                 // tamanho do sistema linear
     unsigned int k;                 // k diagonais
@@ -104,15 +98,6 @@ typedef struct {
  */
 void prnSisLin(FILE * arq_saida, SistLinear_t *SL);
 
-/**
- * @brief 
- * 
- * @param arq_saida 
- * @param A 
- * @param n 
- * @param k 
- */
-void prnCoef(FILE* arq_saida, Coeficientes_t *A, unsigned int n, unsigned int k);
 
 /**
  * @brief Libera as estruturas do sistema linear
@@ -138,13 +123,5 @@ SistLinear_t *alocarSisLin(unsigned int n, unsigned int k, unsigned int p);
  */
 void initSistLinear(SistLinear_t *SL);
 
-/**
- * @brief 
- * 
- * @param n 
- * @param k 
- * @return Coeficientes_t* 
- */
-Coeficientes_t *alocarCoeficiente(unsigned int n, unsigned int k);
 
 #endif

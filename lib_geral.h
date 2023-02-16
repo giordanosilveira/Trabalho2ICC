@@ -57,15 +57,16 @@ int validarArgumentos(char **argumentos, int *tamanhoSL, int *k_diagonais, int *
 // void liberarMatriz(real_t **matriz);
 
 
-// /**
-//  * @brief Aloca uma matriz genérica na memória
-//  * 
-//  * @param n (unsigned int) : tamanho da matriz.
-//  * @param tam_ptr (unsigned int) : tamanho dos ponteiros.
-//  * @param tam_ele (unsigned int) : tamanho dos elementos.
-//  * @return (void**) : Ponteiro para a matriz 
-//  */
-// real_t **alocarMatriz(unsigned int n, unsigned int tam_ptr, unsigned int tam_ele);
+/**
+ * @brief Aloca uma matriz genérica na memória
+ * 
+ * @param n (unsigned int) : Número de linhas da matriz.
+ * @param k (unsigned int) : Número de colunas da matriz.
+ * @param tam_ptr (unsigned int) : tamanho dos elementos.
+ * @param tam_ele (unsigned int) : tamanho dos elementos.
+ * @return (real_t**) : Ponteiro para a matriz 
+ */
+real_t **alocarMatriz(unsigned int n, unsigned int k, unsigned int tam_ptr, unsigned int tam_ele);
 
 
 // /**
@@ -87,14 +88,6 @@ int validarArgumentos(char **argumentos, int *tamanhoSL, int *k_diagonais, int *
  */
 void *alocarVetor(int tamanho, int size);
 
-
-/**
- * @brief 
- * 
- * @param orig 
- * @return SistLinear_t* 
- */
-Coeficientes_t *calcularTransposta(SistLinear_t *orig);
 
 
 // /**

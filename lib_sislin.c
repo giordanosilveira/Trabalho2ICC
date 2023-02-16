@@ -29,64 +29,7 @@
     return (double)(k << 2) * (double)rand() * invRandMax;
 }
 
-void liberarCoeficientes(Coeficientes_t *coef) {
 
-    if (coef) {
-        
-        if (coef->diagonal_princial)
-            free(coef->diagonal_princial);
-    
-        if (coef->diagonais_inferiores) {
-            free(coef->diagonais_inferiores[0]);
-            free(coef->diagonais_inferiores);
-        }
-
-        if (coef->diagonais_superiores) {
-            free(coef->diagonais_superiores[0]);
-            free(coef->diagonais_superiores);
-        }
-
-        free(coef);
-
-    }
-
-
-}
-
-
-Coeficientes_t *alocarCoeficiente(unsigned int n, unsigned int k) {
-
-    Coeficientes_t *coef;
-
-    coef = malloc(sizeof(Coeficientes_t));
-    if (coef) {
-        coef->diagonal_princial = (real_t*)calloc(n, sizeof(real_t));
-        coef->diagonais_superiores = (real_t**)malloc((k/2) * sizeof(real_t *));
-        coef->diagonais_inferiores = (real_t**)malloc((k/2) * sizeof(real_t *));
-
-        if (! coef->diagonal_princial || ! coef->diagonais_superiores || ! coef->diagonais_inferiores) {
-            liberarCoeficientes(coef);
-            return NULL;
-        }
-
-        coef->diagonais_inferiores[0] = (real_t*)calloc(n*(k/2), sizeof(real_t));
-        coef->diagonais_superiores[0] = (real_t*)calloc(n*(k/2), sizeof(real_t));
-
-        if (! coef->diagonais_inferiores[0] || ! coef->diagonais_superiores[0] ){
-            liberarCoeficientes(coef);
-            return NULL;
-        }
-
-        for (int i = 0; i < (k/2); i++){
-            coef->diagonais_inferiores[i] = coef->diagonais_inferiores[0] + i * n;
-            coef->diagonais_superiores[i] = coef->diagonais_superiores[0] + i * n;
-        }
-
-        return coef;
-    }
-    return NULL;
-
-}
 
 void liberarSisLin(SistLinear_t *sistl) {
 
@@ -95,9 +38,14 @@ void liberarSisLin(SistLinear_t *sistl) {
         if (sistl->b)
             free(sistl->b);
 
+        if (sistl->A) {
+            if (sistl->A[0])
+                free(sistl->A[0]);
+            free(sistl->A);
+        }
+
         free(sistl);
     }
-
 
 }
 
@@ -115,7 +63,7 @@ SistLinear_t *alocarSisLin(unsigned int n, unsigned int k, unsigned int p)
         SL->k = k;
         SL->p = p;
 
-        SL->A = alocarCoeficiente(n, k);
+        SL->A = alocarMatriz(n, k, sizeof(real_t*), sizeof(real_t));
         SL->b = (real_t *)malloc(n * sizeof(real_t));
 
         // Verifica se não foi alocado.
@@ -131,28 +79,36 @@ SistLinear_t *alocarSisLin(unsigned int n, unsigned int k, unsigned int p)
 
 void initSistLinear(SistLinear_t *sistl) {
 
-    for (int i = 0; i < (sistl->k / 2); ++i) {
-        for (int j = 0; j < sistl->n; ++j) {
+    int j = 0;
+    
+    int k = (sistl->k) / 2;
+    for (; j < (sistl->k / 2); ++j){
+        int i = 0;
 
-            if (j <= i) {
-                sistl->A->diagonais_inferiores[i][j] = 0.0;
-            }
-            else {
-                sistl->A->diagonais_inferiores[i][j] = generateRandomA(i, j, sistl->k);
-            }
-
-            if (sistl->n - i - 2 >= j) {
-                sistl->A->diagonais_superiores[i][j] = generateRandomA(i, j, sistl->k);
-            }
-            else {
-                sistl->A->diagonais_superiores[i][j] = 0.0;
-            }
-
+        for (; i < sistl->n; ++i) {
+            if (i < k)
+                sistl->A[i][j] = 0.0;
+            else
+                sistl->A[i][j] = generateRandomA(i, j, sistl->k);
         }
+        --k; 
     }
-    for (int i = 0; i < sistl->n; ++i) {
-        sistl->A->diagonal_princial[i] = generateRandomA(i, i, sistl->k);
-        sistl->b[i] = generateRandomB(sistl->k);
+
+    for (int i = 0; i < sistl->n; ++i){
+        sistl->A[i][j] = generateRandomA(i, i, sistl->k);
+    }
+    j++;
+
+    int k = 1;
+    for (; j < sistl->k; ++j){
+        int i = 0;
+        for (; i < sistl->n; ++i) {
+            if (i < sistl->n - k - 1)
+                sistl->A[i][j] = generateRandomA(i, j, sistl->k);
+            else
+                sistl->A[i][j] = 0.0;
+        }
+        ++k; 
     }
 
 }
@@ -326,53 +282,53 @@ void initSistLinear(SistLinear_t *sistl) {
 //     return A;
 // }
 
-void prnCoef(FILE* arq_saida, Coeficientes_t *A, unsigned int n, unsigned int k)
-{
+// void prnCoef(FILE* arq_saida, Coeficientes_t *A, unsigned int n, unsigned int k)
+// {
 
-    for (int i = 0; i < k / 2; ++i)
-    {
-        fprintf(arq_saida, "\n  Diagonal inferior\n");
-        for (int j = 0; j < n; ++j) {
-            fprintf(arq_saida, "%10g ", A->diagonais_inferiores[i][j]);
-        }
-        fprintf(arq_saida, "\n  Diagonal superiores\n");
-        for (int j = 0; j < n; ++j) {
-            fprintf(arq_saida, "%10g ", A->diagonais_superiores[i][j]);
-        }
-    }
+//     for (int i = 0; i < k / 2; ++i)
+//     {
+//         fprintf(arq_saida, "\n  Diagonal inferior\n");
+//         for (int j = 0; j < n; ++j) {
+//             fprintf(arq_saida, "%10g ", A->diagonais_inferiores[i][j]);
+//         }
+//         fprintf(arq_saida, "\n  Diagonal superiores\n");
+//         for (int j = 0; j < n; ++j) {
+//             fprintf(arq_saida, "%10g ", A->diagonais_superiores[i][j]);
+//         }
+//     }
 
-    fprintf(arq_saida, "\n\n\n");
-    for (int i = 0; i < n; ++i){
-        fprintf(arq_saida, "%10g ", A->diagonal_princial[i]);
-    }
+//     fprintf(arq_saida, "\n\n\n");
+//     for (int i = 0; i < n; ++i){
+//         fprintf(arq_saida, "%10g ", A->diagonal_princial[i]);
+//     }
     
-}
+// }
 
-void prnSisLin(FILE* arq_saida, SistLinear_t *SL)
-{
-    int n = SL->n;
+// void prnSisLin(FILE* arq_saida, SistLinear_t *SL)
+// {
+//     int n = SL->n;
 
-    for (int i = 0; i < SL->k / 2; ++i)
-    {
-        fprintf(arq_saida, "\n  Diagonal inferior\n");
-        for (int j = 0; j < n; ++j) {
-            fprintf(arq_saida, "%10g ", SL->A->diagonais_inferiores[i][j]);
-        }
-        fprintf(arq_saida, "\n  Diagonal superiores\n");
-        for (int j = 0; j < n; ++j) {
-            fprintf(arq_saida, "%10g ", SL->A->diagonais_superiores[i][j]);
-        }
-        //fprintf(arq_saida, "%10g\n", SL->A->diagonais_inferiores[i]);
-    }
+//     for (int i = 0; i < SL->k / 2; ++i)
+//     {
+//         fprintf(arq_saida, "\n  Diagonal inferior\n");
+//         for (int j = 0; j < n; ++j) {
+//             fprintf(arq_saida, "%10g ", SL->A->diagonais_inferiores[i][j]);
+//         }
+//         fprintf(arq_saida, "\n  Diagonal superiores\n");
+//         for (int j = 0; j < n; ++j) {
+//             fprintf(arq_saida, "%10g ", SL->A->diagonais_superiores[i][j]);
+//         }
+//         //fprintf(arq_saida, "%10g\n", SL->A->diagonais_inferiores[i]);
+//     }
 
-    fprintf(arq_saida, "\n\n\n");
-    for (int i = 0; i < n; ++i){
-        fprintf(arq_saida, "%10g ", SL->A->diagonal_princial[i]);
-    }
-    fprintf(arq_saida, "\n\n\n");
-    for (int i = 0; i < n; ++i){
-        fprintf(arq_saida, "%10g ", SL->b[i]);
-    }
+//     fprintf(arq_saida, "\n\n\n");
+//     for (int i = 0; i < n; ++i){
+//         fprintf(arq_saida, "%10g ", SL->A->diagonal_princial[i]);
+//     }
+//     fprintf(arq_saida, "\n\n\n");
+//     for (int i = 0; i < n; ++i){
+//         fprintf(arq_saida, "%10g ", SL->b[i]);
+//     }
     
-}
+// }
 
