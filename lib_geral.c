@@ -196,14 +196,14 @@ real_t **alocarMatriz(unsigned int n, unsigned int k, unsigned int tam_ptr, unsi
 // }
 
 
-// void cpyVetor(real_t *dest, real_t *orig, unsigned int *tam)
-// {
+void cpyVetor(real_t *dest, real_t *orig, unsigned int *tam)
+{
 
-//     for (int i = 0; i < *(tam); ++i)
-//     {
-//         dest[i] = orig[i];
-//     }
-// }
+    for (int i = 0; i < *(tam); ++i)
+    {
+        dest[i] = orig[i];
+    }
+}
 
 
 

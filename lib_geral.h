@@ -90,14 +90,14 @@ void *alocarVetor(int tamanho, int size);
 
 
 
-// /**
-//  * @brief Copia um vetor para outro
-//  *
-//  * @param dest (real_t*) : vetor destino
-//  * @param orig (real_t*) : vetor origem
-//  * @param tam (int) : tamanho dos vetores
-//  */
-// void cpyVetor(real_t *dest, real_t *orig, unsigned int *tam);
+/**
+ * @brief Copia um vetor para outro
+ *
+ * @param dest (real_t*) : vetor destino
+ * @param orig (real_t*) : vetor origem
+ * @param tam (int) : tamanho dos vetores
+ */
+void cpyVetor(real_t *orig, real_t *dest, unsigned int *tam);
 
 // /**
 //  * @brief Calcula o vetor transposto 'vt' pelo vetor 'v'. Isso resulta em uma

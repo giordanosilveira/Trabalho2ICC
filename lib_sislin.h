@@ -79,15 +79,15 @@ typedef struct {
 // real_t *calcularAtxB(SistLinear_t *SL);
 
 
-// /**
-//  * @brief Efetua uma multiplcação de matrizes entre a matriz transposta 
-//  * A e A. Essa transformação é necessária para ser possível efetuar o métodos dos
-//  * Gradientes conjugados.
-//  * 
-//  * @param SL (SistLinear_t*) : Ponteiro para o sistema linear.
-//  * @return (real_t**) : Matriz resultante da multiplicação. 
-//  */
-// real_t **calcularMatrizAtxA(SistLinear_t* SL);
+/**
+ * @brief Efetua uma multiplcação de matrizes entre a matriz transposta 
+ * A e A. Essa transformação é necessária para ser possível efetuar o métodos dos
+ * Gradientes conjugados.
+ * 
+ * @param SL (SistLinear_t*) : Ponteiro para o sistema linear.
+ * @return (SistLinear_t*) : Matriz resultante da multiplicação. 
+ */
+SistLinear_t *calcularMatrizAtxA(SistLinear_t* SL);
 
 
 /**
@@ -122,6 +122,22 @@ SistLinear_t *alocarSisLin(unsigned int n, unsigned int k, unsigned int p);
  * @param SL (SistLinear_t *) : O sistema linear
  */
 void initSistLinear(SistLinear_t *SL);
+
+/**
+ * @brief 
+ * 
+ * @param original 
+ * @return SistLinear_t* 
+ */
+SistLinear_t* calcularTransposta(SistLinear_t *original);
+
+/**
+ * @brief 
+ * 
+ * @param orig 
+ * @param dest 
+ */
+void copiarSistLinear(SistLinear_t*orig, SistLinear_t *dest);
 
 
 #endif

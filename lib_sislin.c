@@ -99,17 +99,63 @@ void initSistLinear(SistLinear_t *sistl) {
     }
     j++;
 
-    int k = 1;
+    k = 1;
     for (; j < sistl->k; ++j){
         int i = 0;
         for (; i < sistl->n; ++i) {
-            if (i < sistl->n - k - 1)
+            if (i < sistl->n - k)
                 sistl->A[i][j] = generateRandomA(i, j, sistl->k);
             else
                 sistl->A[i][j] = 0.0;
         }
         ++k; 
     }
+
+}
+
+/**
+ * @brief 
+ * 
+ * @param orig 
+ * @param dest 
+ */
+void copiarSistLinear(SistLinear_t*orig, SistLinear_t *dest) {
+
+    for (int i = 0; i < orig->n; ++i){
+        for (int j = 0; j < orig->k; ++j){
+            dest->A[i][j] = orig->A[i][j];
+        }
+    }
+
+}
+
+
+SistLinear_t* calcularTransposta(SistLinear_t *original) {
+
+    SistLinear_t* transposto =  alocarSisLin(original->n, original->k, original->p);
+
+    if (transposto) {
+
+        copiarSistLinear(original, transposto);
+        for (int i = 0; i < original->n - (original->k/2) ; ++i){
+            
+            int deslocamento = 1;
+            double aux;
+            for (int j = (original->k/2) + 1; j < original->k; ++j){
+
+                aux = transposto->A[i + deslocamento][(original->k/2) - deslocamento]; 
+                transposto->A[i + deslocamento][(original->k/2) - deslocamento] = transposto->A[i][j];
+                transposto->A[i][j] = aux;
+                
+                deslocamento++; 
+            }
+            deslocamento = 1;
+        }
+
+        return transposto;
+
+    }
+    return transposto;
 
 }
 
@@ -259,28 +305,49 @@ void initSistLinear(SistLinear_t *sistl) {
 // }
 
 
-// real_t **calcularMatrizAtxA(SistLinear_t* SL) {
+SistLinear_t *calcularMatrizAtxA(SistLinear_t* SL) {
 
-//     real_t **A = alocarMatriz(SL->n, sizeof(real_t*), sizeof(real_t));
+    SistLinear_t* AtxA = alocarSisLin(SL->n, SL->k + 2, SL->p);
+    real_t *linha = (real_t*)alocarVetor(SL->k, sizeof(real_t));
+    real_t soma = 0.0;
 
-//     //Percorre a matriz A
-//     for (int i = 0; i < SL->n; ++i){
-//         for (int j = 0; j < SL->n; ++j){
-//             A[i][j] = 0.0;
-//             // Efetua o cálculo.
-//             for (int k = 0; k < SL->n; ++k) {
-//                 A[i][j] = A[i][j] + SL->A[k][i] * SL->A[k][j];
-//                 if (isnan(A[i][j]) || isinf(A[i][j]))
-//                 {
-//                     fprintf(stderr, "Erro A[i][j](calcularMatrizAxAt): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i\n", A[i][j], i, j);
-//                     exit(1);
-//                 }
-//             }
-//         }
-//     }
+    if (AtxA && linha) {
+
+        //Percorre a matriz A
+        int m = AtxA->k / 2;
+        for (int i = 0; i < SL->n; ++i) {
+            for (int j = 0; j < SL->n; ++j) {
+                for (int k = 0; j < AtxA->k; ++k) {
+                    if (i != j)
+                        soma += SL->A[j][k] * linha[k];
+                }
+            }
+            copiarVetor(linha, AtxA->A[0], AtxA->k);
+            for(int j = 0; j < AtxA->k; ++j) {
+                
+            }
+            AtxA[i]
+        }
+
+        for (int i = 0; i < SL->n; ++i){
+            for (int j = 0; j < SL->n; ++j){
+                
+                A[i][j] = 0.0;
+                // Efetua o cálculo.
+                for (int k = 0; k < SL->n; ++k) {
+                    A[i][j] = A[i][j] + SL->A[k][i] * SL->A[k][j];
+                    if (isnan(A[i][j]) || isinf(A[i][j]))
+                    {
+                        fprintf(stderr, "Erro A[i][j](calcularMatrizAxAt): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i\n", A[i][j], i, j);
+                        exit(1);
+                    }
+                }
+            }
+        }
+    }
     
-//     return A;
-// }
+    return A;
+}
 
 // void prnCoef(FILE* arq_saida, Coeficientes_t *A, unsigned int n, unsigned int k)
 // {
@@ -304,31 +371,16 @@ void initSistLinear(SistLinear_t *sistl) {
     
 // }
 
-// void prnSisLin(FILE* arq_saida, SistLinear_t *SL)
-// {
-//     int n = SL->n;
+void prnSisLin(FILE* arq_saida, SistLinear_t *SL)
+{
 
-//     for (int i = 0; i < SL->k / 2; ++i)
-//     {
-//         fprintf(arq_saida, "\n  Diagonal inferior\n");
-//         for (int j = 0; j < n; ++j) {
-//             fprintf(arq_saida, "%10g ", SL->A->diagonais_inferiores[i][j]);
-//         }
-//         fprintf(arq_saida, "\n  Diagonal superiores\n");
-//         for (int j = 0; j < n; ++j) {
-//             fprintf(arq_saida, "%10g ", SL->A->diagonais_superiores[i][j]);
-//         }
-//         //fprintf(arq_saida, "%10g\n", SL->A->diagonais_inferiores[i]);
-//     }
+    for (int i = 0; i < SL->n; ++i)
+    {
+        for (int j = 0; j < SL->k; ++j)
+            fprintf(arq_saida, "%10g ", SL->A[i][j]);
+        fprintf(arq_saida, "\n");
+    }     
+    fprintf(arq_saida, "\n\n");
 
-//     fprintf(arq_saida, "\n\n\n");
-//     for (int i = 0; i < n; ++i){
-//         fprintf(arq_saida, "%10g ", SL->A->diagonal_princial[i]);
-//     }
-//     fprintf(arq_saida, "\n\n\n");
-//     for (int i = 0; i < n; ++i){
-//         fprintf(arq_saida, "%10g ", SL->b[i]);
-//     }
-    
-// }
+}
 

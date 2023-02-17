@@ -89,12 +89,19 @@ int main(int argc, char *argv[])
     }
 
     SistLinear_t *SL;           // Sistema Linear 
-    Coeficientes_t *A_trasp;
     SL = alocarSisLin(tamanhoSL, k_diagonais, pre_condicionador);
     initSistLinear(SL);
-    A_trasp = calcularTransposta(SL);
-    prnCoef(stderr, SL->A, SL->n, SL->k);
-    prnCoef(stderr, A_trasp, SL->n, SL->k);
+    SistLinear_t *SLTransp = calcularTransposta(SL);
+    prnSisLin(stdout, SL);
+    prnSisLin(stdout, SLTransp);
+
+    SistLinear_t *SLxSLTranspo = 
+
+
+    
+    //A_trasp = calcularTransposta(SL);
+    //prnCoef(stderr, SL->A, SL->n, SL->k);
+    //prnCoef(stderr, A_trasp, SL->n, SL->k);
 
     /*Variaveis*/
     //FILE *arq_saida = fopen(argumentos[5],"w+");
