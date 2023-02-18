@@ -312,15 +312,21 @@ SistLinear_t *calcularMatrizAtxA(SistLinear_t* SL) {
     real_t soma = 0.0;
 
     if (AtxA && linha) {
+        
+        int i;
+        for (i = 0; i < (SL->k / 2); ++i) {
+            
+        }
+
 
         //Percorre a matriz A
         int m = AtxA->k / 2;
         for (int i = 0; i < SL->n; ++i) {
             for (int j = 0; j < SL->n; ++j) {
-                for (int k = 0; j < AtxA->k; ++k) {
-                    if (i != j)
-                        soma += SL->A[j][k] * linha[k];
-                }
+                for (int k = 0; k < AtxA->k; ++k) {
+                    soma += SL->A[j][k] * linha[k];
+                AtxA->A[i][m];
+                m = (m + 1) % AtxA->k;
             }
             copiarVetor(linha, AtxA->A[0], AtxA->k);
             for(int j = 0; j < AtxA->k; ++j) {
