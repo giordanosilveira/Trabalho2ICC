@@ -95,7 +95,8 @@ int main(int argc, char *argv[])
     prnSisLin(stdout, SL);
     prnSisLin(stdout, SLTransp);
 
-    SistLinear_t *SLxSLTranspo = 
+    SistLinear_t *SLTranspoxSL = calcularMatrizAtxA(SLTransp);
+    prnSisLin(stdout, SLTranspoxSL);
 
 
     

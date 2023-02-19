@@ -314,45 +314,43 @@ SistLinear_t *calcularMatrizAtxA(SistLinear_t* SL) {
     if (AtxA && linha) {
         
         int i;
-        for (i = 0; i < (SL->k / 2); ++i) {
-            
-        }
+        int j;
+        int m;
+        int deslocamento = 0;
 
-
-        //Percorre a matriz A
-        int m = AtxA->k / 2;
-        for (int i = 0; i < SL->n; ++i) {
-            for (int j = 0; j < SL->n; ++j) {
-                for (int k = 0; k < AtxA->k; ++k) {
-                    soma += SL->A[j][k] * linha[k];
-                AtxA->A[i][m];
-                m = (m + 1) % AtxA->k;
-            }
-            copiarVetor(linha, AtxA->A[0], AtxA->k);
-            for(int j = 0; j < AtxA->k; ++j) {
-                
-            }
-            AtxA[i]
-        }
-
-        for (int i = 0; i < SL->n; ++i){
-            for (int j = 0; j < SL->n; ++j){
-                
-                A[i][j] = 0.0;
-                // Efetua o cálculo.
-                for (int k = 0; k < SL->n; ++k) {
-                    A[i][j] = A[i][j] + SL->A[k][i] * SL->A[k][j];
-                    if (isnan(A[i][j]) || isinf(A[i][j]))
-                    {
-                        fprintf(stderr, "Erro A[i][j](calcularMatrizAxAt): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i\n", A[i][j], i, j);
-                        exit(1);
+        int start = (AtxA->k / 2);
+        for (i = 0; i < SL->n; ++i) { 
+            for (m = i; m <= ((SL->k / 2) + i + 1) && (m < SL->n); ++m) {
+                soma = 0.0;
+                for (j = 0; (j < SL->k); ++j){
+                       
+                    if (j - deslocamento > -1) {
+                       soma += SL->A[i][j]*SL->A[m][j - deslocamento];
+                       if (isnan(soma) || isinf(soma))
+                        {
+                            //fprintf(stderr, "Erro A[i][j](calcularMatrizAxAt): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i\n", A[i][j], i, j);
+                            liberarSisLin(AtxA);
+                            exit(1);
+                        }
                     }
                 }
+                AtxA->A[i][start] = soma;
+                if (i + deslocamento < SL->n)
+                    AtxA->A[i + deslocamento][(AtxA->k / 2) - deslocamento] = soma;
+                
+                deslocamento++;
+                
+
+                //fazer a cópia para a diagonal inferior
+                start++;
             }
+            deslocamento = 0;            
+            start = (AtxA->k / 2);
         }
+
     }
     
-    return A;
+    return AtxA;
 }
 
 // void prnCoef(FILE* arq_saida, Coeficientes_t *A, unsigned int n, unsigned int k)
