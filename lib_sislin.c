@@ -30,208 +30,23 @@
 }
 
 
-void liberarGradientes(Gradiente_t *grad){
 
-    if (grad) {
-        if (grad->aux_A[0])
-            free(grad->aux_A[0]);
-        if (grad->aux_A)
-            free(grad->aux_A);
-        if (grad->aux_b)
-            free(grad->aux_b);
-        if (grad->vetor_d)
-            free(grad->vetor_d);
-        if (grad->vetor_r)
-            free(grad->vetor_r);
-        if (grad->vetor_r0)
-            free(grad->vetor_r0);
-        if (grad->vetor_x0)
-            free(grad->vetor_x0);
-    }
-    free(grad);
+void liberarSisLin(SistLinear_t *sistl) {
 
-}
+    if (sistl) {
 
+        if (sistl->b)
+            free(sistl->b);
 
-Gradiente_t* alocarGradiente(unsigned int n) {
-
-    Gradiente_t *grad = malloc(sizeof(Gradiente_t));
-    if (grad) {
-        
-        grad->aux_A = alocarMatriz(n, sizeof(real_t*), sizeof(real_t));
-
-        grad->aux_b = (real_t*)alocarVetor(n, sizeof(real_t));
-        if (! grad->aux_b) {
-            fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
-            free(grad->aux_b);
-            exit(1);
+        if (sistl->A) {
+            if (sistl->A[0])
+                free(sistl->A[0]);
+            free(sistl->A);
         }
-        grad->vetor_d = (real_t*)alocarVetor(n, sizeof(real_t));
-        if (! grad->vetor_d) {
-            fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
-            free(grad->aux_b);
-            free(grad->vetor_d);
-            exit(1);
-        }
-        grad->vetor_r0 = (real_t*)alocarVetor(n, sizeof(real_t));
-        if (! grad->vetor_r0) {
-            fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
-            free(grad->aux_b);
-            free(grad->vetor_d);
-            free(grad->vetor_r0);
-            exit(1);
-        }
-        grad->vetor_r = (real_t*)alocarVetor(n, sizeof(real_t));
-        if (! grad->vetor_r) {
-            fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
-            free(grad->aux_b);
-            free(grad->vetor_d);
-            free(grad->vetor_r0);
-            free(grad->vetor_r);
-            exit(1);
-        }
-        grad->vetor_x0 = (real_t*)alocarVetor(n, sizeof(real_t));
-        if (! grad->vetor_x0) {
-            fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
-            free(grad->aux_b);
-            free(grad->vetor_d);
-            free(grad->vetor_r0);
-            free(grad->vetor_r);
-            free(grad->vetor_x0);
-            exit(1);
-        }
-    }
-    return grad;
 
-}
-
-
-void tornarDiagonalDominante(SistLinear_t *SL) {
-
-    real_t soma;
-
-    int i = 0;
-    while (i < (SL->k / 2) + 1) {
-        soma = 0.0;
-        for (int j = 0; j <= (SL->k / 2) + i; ++j) {
-            soma = soma + SL->A[i][j];
-        }
-        SL->A[i][i] = soma + 1.0;
-        ++i;
+        free(sistl);
     }
 
-    int m = 1;
-    for (i = (SL->k / 2) + 1; i < SL->n; ++i){
-        soma = 0.0;
-        for (int j = m; j <= SL->k + m && j < SL->n; ++j){
-            soma = soma + SL->A[i][j];
-        }
-        ++m;
-        SL->A[i][i] = soma + 1.0;
-    }
-}
-
-
-void calcularResiduo(real_t**coef, real_t *residuo, real_t*b, real_t *x, int n)
-{
-
-    // Percorre a matriz, realiza a soma da linha e tira do resíduo.
-    for (int i = 0; i < n; ++i)
-    {
-        real_t soma = 0.0;
-        for (int j = 0; j < n; ++j)
-        {
-            soma = soma + coef[i][j] * x[j];               //overflow
-            if (isnan(soma) || isinf(soma))
-            {
-                fprintf(stderr, "Erro soma(calcularResiduo): %g é NaN ou +/-Infinito\n", soma);
-                exit(1);
-            } 
-        }
-        residuo[i] = b[i] - soma;
-    }
-}
-
-
-real_t *calcularAtxB(SistLinear_t *SL) {
-
-    real_t *b = (real_t *)alocarVetor(SL->n, sizeof(real_t));
-
-    // Percorre a matriz de coeficientes e os termos independentes.
-    for (int i = 0; i < SL->n; ++i) {
-        for (int j = 0; j < SL->n; ++j) {
-            // Realiza os cálculos.
-            b[i] += SL->A[j][i] * SL->b[j];
-            if (isnan(b[i]) || isinf(b[i]))
-            {
-                fprintf(stderr, "Erro b[i](calcularBxAt): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i\n", b[i], i, j);
-                exit(1);
-            }
-        }
-    }
-
-    return b;
-
-}
-
-
-real_t **calcularMatrizAtxA(SistLinear_t* SL) {
-
-    real_t **A = alocarMatriz(SL->n, sizeof(real_t*), sizeof(real_t));
-
-    //Percorre a matriz A
-    for (int i = 0; i < SL->n; ++i){
-        for (int j = 0; j < SL->n; ++j){
-            A[i][j] = 0.0;
-            // Efetua o cálculo.
-            for (int k = 0; k < SL->n; ++k) {
-                A[i][j] = A[i][j] + SL->A[k][i] * SL->A[k][j];
-                if (isnan(A[i][j]) || isinf(A[i][j]))
-                {
-                    fprintf(stderr, "Erro A[i][j](calcularMatrizAxAt): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i\n", A[i][j], i, j);
-                    exit(1);
-                }
-            }
-        }
-    }
-    
-    return A;
-}
-
-
-void prnSisLin(FILE* arq_saida, SistLinear_t *SL)
-{
-    int n = SL->n;
-
-    for (int i = 0; i < n; ++i)
-    {
-        fprintf(arq_saida, "\n  ");
-        for (int j = 0; j < n; ++j)
-            fprintf(arq_saida, "%10g", SL->A[i][j]);
-        fprintf(arq_saida, "   |   %g", SL->b[i]);
-    }
-    fprintf(arq_saida, "\n\n");
-}
-
-
-void liberarSisLin(SistLinear_t *SL)
-{
-
-    if (SL)
-    {
-
-        if (SL->A)
-        {
-            if (SL->A[0])
-                free(SL->A[0]);
-            free(SL->A);
-        }
-
-        if (SL->b)
-            free(SL->b);
-
-        free(SL);
-    }
 }
 
 
@@ -248,68 +63,328 @@ SistLinear_t *alocarSisLin(unsigned int n, unsigned int k, unsigned int p)
         SL->k = k;
         SL->p = p;
 
-        // Alocação das estruturas internar do Sistema Linear.
-        SL->A = (real_t **)malloc(n * sizeof(real_t *));
+        SL->A = alocarMatriz(n, k, sizeof(real_t*), sizeof(real_t));
         SL->b = (real_t *)malloc(n * sizeof(real_t));
 
         // Verifica se não foi alocado.
-        if (!(SL->A) || !(SL->b))
-        {
+        if (!(SL->A) || !(SL->b)) {
             liberarSisLin(SL);
             return NULL;
         }
 
-        SL->A[0] = (real_t *)malloc(n * n * sizeof(real_t));
-        // Verifica se não foi alocado.
-        if (!(SL->A[0]))
-        {
-            liberarSisLin(SL);
-            return NULL;
-        }
-
-        for (int i = 1; i < n; ++i)
-        {
-            SL->A[i] = SL->A[i - 1] + n;
-        }
+        
     }
     return SL;
 }
 
+void initSistLinear(SistLinear_t *sistl) {
 
-void initSisLin(SistLinear_t *SL)
+    int j = 0;
+    
+    int k = (sistl->k) / 2;
+    for (; j < (sistl->k / 2); ++j){
+        int i = 0;
+
+        for (; i < sistl->n; ++i) {
+            if (i < k)
+                sistl->A[i][j] = 0.0;
+            else
+                sistl->A[i][j] = generateRandomA(i, j, sistl->k);
+        }
+        --k; 
+    }
+
+    for (int i = 0; i < sistl->n; ++i){
+        sistl->A[i][j] = generateRandomA(i, i, sistl->k);
+    }
+    j++;
+
+    k = 1;
+    for (; j < sistl->k; ++j){
+        int i = 0;
+        for (; i < sistl->n; ++i) {
+            if (i < sistl->n - k)
+                sistl->A[i][j] = generateRandomA(i, j, sistl->k);
+            else
+                sistl->A[i][j] = 0.0;
+        }
+        ++k; 
+    }
+
+}
+
+/**
+ * @brief 
+ * 
+ * @param orig 
+ * @param dest 
+ */
+void copiarSistLinear(SistLinear_t*orig, SistLinear_t *dest) {
+
+    for (int i = 0; i < orig->n; ++i){
+        for (int j = 0; j < orig->k; ++j){
+            dest->A[i][j] = orig->A[i][j];
+        }
+    }
+
+}
+
+
+SistLinear_t* calcularTransposta(SistLinear_t *original) {
+
+    SistLinear_t* transposto =  alocarSisLin(original->n, original->k, original->p);
+
+    if (transposto) {
+
+        copiarSistLinear(original, transposto);
+        for (int i = 0; i < original->n - (original->k/2) ; ++i){
+            
+            int deslocamento = 1;
+            double aux;
+            for (int j = (original->k/2) + 1; j < original->k; ++j){
+
+                aux = transposto->A[i + deslocamento][(original->k/2) - deslocamento]; 
+                transposto->A[i + deslocamento][(original->k/2) - deslocamento] = transposto->A[i][j];
+                transposto->A[i][j] = aux;
+                
+                deslocamento++; 
+            }
+            deslocamento = 1;
+        }
+
+        return transposto;
+
+    }
+    return transposto;
+
+}
+
+
+// void liberarGradientes(Gradiente_t *grad){
+
+//     if (grad) {
+//         if (grad->aux_A[0])
+//             free(grad->aux_A[0]);
+//         if (grad->aux_A)
+//             free(grad->aux_A);
+//         if (grad->aux_b)
+//             free(grad->aux_b);
+//         if (grad->vetor_d)
+//             free(grad->vetor_d);
+//         if (grad->vetor_r)
+//             free(grad->vetor_r);
+//         if (grad->vetor_r0)
+//             free(grad->vetor_r0);
+//         if (grad->vetor_x0)
+//             free(grad->vetor_x0);
+//     }
+//     free(grad);
+
+// }
+
+
+// Gradiente_t* alocarGradiente(unsigned int n) {
+
+//     Gradiente_t *grad = malloc(sizeof(Gradiente_t));
+//     if (grad) {
+        
+//         grad->aux_A = alocarMatriz(n, sizeof(real_t*), sizeof(real_t));
+
+//         grad->aux_b = (real_t*)alocarVetor(n, sizeof(real_t));
+//         if (! grad->aux_b) {
+//             fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
+//             free(grad->aux_b);
+//             exit(1);
+//         }
+//         grad->vetor_d = (real_t*)alocarVetor(n, sizeof(real_t));
+//         if (! grad->vetor_d) {
+//             fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
+//             free(grad->aux_b);
+//             free(grad->vetor_d);
+//             exit(1);
+//         }
+//         grad->vetor_r0 = (real_t*)alocarVetor(n, sizeof(real_t));
+//         if (! grad->vetor_r0) {
+//             fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
+//             free(grad->aux_b);
+//             free(grad->vetor_d);
+//             free(grad->vetor_r0);
+//             exit(1);
+//         }
+//         grad->vetor_r = (real_t*)alocarVetor(n, sizeof(real_t));
+//         if (! grad->vetor_r) {
+//             fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
+//             free(grad->aux_b);
+//             free(grad->vetor_d);
+//             free(grad->vetor_r0);
+//             free(grad->vetor_r);
+//             exit(1);
+//         }
+//         grad->vetor_x0 = (real_t*)alocarVetor(n, sizeof(real_t));
+//         if (! grad->vetor_x0) {
+//             fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
+//             free(grad->aux_b);
+//             free(grad->vetor_d);
+//             free(grad->vetor_r0);
+//             free(grad->vetor_r);
+//             free(grad->vetor_x0);
+//             exit(1);
+//         }
+//     }
+//     return grad;
+
+// }
+
+
+// void tornarDiagonalDominante(SistLinear_t *SL) {
+
+//     real_t soma;
+
+//     int i = 0;
+//     while (i < (SL->k / 2) + 1) {
+//         soma = 0.0;
+//         for (int j = 0; j <= (SL->k / 2) + i; ++j) {
+//             soma = soma + SL->A[i][j];
+//         }
+//         SL->A[i][i] = soma + 1.0;
+//         ++i;
+//     }
+
+//     int m = 1;
+//     for (i = (SL->k / 2) + 1; i < SL->n; ++i){
+//         soma = 0.0;
+//         for (int j = m; j <= SL->k + m && j < SL->n; ++j){
+//             soma = soma + SL->A[i][j];
+//         }
+//         ++m;
+//         SL->A[i][i] = soma + 1.0;
+//     }
+// }
+
+
+// void calcularResiduo(real_t**coef, real_t *residuo, real_t*b, real_t *x, int n)
+// {
+
+//     // Percorre a matriz, realiza a soma da linha e tira do resíduo.
+//     for (int i = 0; i < n; ++i)
+//     {
+//         real_t soma = 0.0;
+//         for (int j = 0; j < n; ++j)
+//         {
+//             soma = soma + coef[i][j] * x[j];               //overflow
+//             if (isnan(soma) || isinf(soma))
+//             {
+//                 fprintf(stderr, "Erro soma(calcularResiduo): %g é NaN ou +/-Infinito\n", soma);
+//                 exit(1);
+//             } 
+//         }
+//         residuo[i] = b[i] - soma;
+//     }
+// }
+
+
+// real_t *calcularAtxB(SistLinear_t *SL) {
+
+//     real_t *b = (real_t *)alocarVetor(SL->n, sizeof(real_t));
+
+//     // Percorre a matriz de coeficientes e os termos independentes.
+//     for (int i = 0; i < SL->n; ++i) {
+//         for (int j = 0; j < SL->n; ++j) {
+//             // Realiza os cálculos.
+//             b[i] += SL->A[j][i] * SL->b[j];
+//             if (isnan(b[i]) || isinf(b[i]))
+//             {
+//                 fprintf(stderr, "Erro b[i](calcularBxAt): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i\n", b[i], i, j);
+//                 exit(1);
+//             }
+//         }
+//     }
+
+//     return b;
+
+// }
+
+
+SistLinear_t *calcularMatrizAtxA(SistLinear_t* SL) {
+
+    SistLinear_t* AtxA = alocarSisLin(SL->n, SL->k + 2, SL->p);
+    real_t *linha = (real_t*)alocarVetor(SL->k, sizeof(real_t));
+    real_t soma = 0.0;
+
+    if (AtxA && linha) {
+        
+        int i;
+        int j;
+        int m;
+        int deslocamento = 0;
+
+        int start = (AtxA->k / 2);
+        for (i = 0; i < SL->n; ++i) { 
+            for (m = i; m <= ((SL->k / 2) + i + 1) && (m < SL->n); ++m) {
+                soma = 0.0;
+                for (j = 0; (j < SL->k); ++j){
+                       
+                    if (j - deslocamento > -1) {
+                       soma += SL->A[i][j]*SL->A[m][j - deslocamento];
+                       if (isnan(soma) || isinf(soma))
+                        {
+                            //fprintf(stderr, "Erro A[i][j](calcularMatrizAxAt): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i\n", A[i][j], i, j);
+                            liberarSisLin(AtxA);
+                            exit(1);
+                        }
+                    }
+                }
+                AtxA->A[i][start] = soma;
+                if (i + deslocamento < SL->n)
+                    AtxA->A[i + deslocamento][(AtxA->k / 2) - deslocamento] = soma;
+                
+                deslocamento++;
+                
+
+                //fazer a cópia para a diagonal inferior
+                start++;
+            }
+            deslocamento = 0;            
+            start = (AtxA->k / 2);
+        }
+
+    }
+    
+    return AtxA;
+}
+
+// void prnCoef(FILE* arq_saida, Coeficientes_t *A, unsigned int n, unsigned int k)
+// {
+
+//     for (int i = 0; i < k / 2; ++i)
+//     {
+//         fprintf(arq_saida, "\n  Diagonal inferior\n");
+//         for (int j = 0; j < n; ++j) {
+//             fprintf(arq_saida, "%10g ", A->diagonais_inferiores[i][j]);
+//         }
+//         fprintf(arq_saida, "\n  Diagonal superiores\n");
+//         for (int j = 0; j < n; ++j) {
+//             fprintf(arq_saida, "%10g ", A->diagonais_superiores[i][j]);
+//         }
+//     }
+
+//     fprintf(arq_saida, "\n\n\n");
+//     for (int i = 0; i < n; ++i){
+//         fprintf(arq_saida, "%10g ", A->diagonal_princial[i]);
+//     }
+    
+// }
+
+void prnSisLin(FILE* arq_saida, SistLinear_t *SL)
 {
 
-    // Percorre a matriz de coeficiente e o vetor de termos independentes e inicializa as estruturas
     for (int i = 0; i < SL->n; ++i)
     {
-        for (int j = 0; j < SL->n; ++j)
-        {
-            // SL->A[i][j] = generateRandomA(i, j, SL->k);
-            if (i == j)
-                SL->A[i][j] = generateRandomA(i, j, SL->k);
-            else if (i > j)
-            {
+        for (int j = 0; j < SL->k; ++j)
+            fprintf(arq_saida, "%10g ", SL->A[i][j]);
+        fprintf(arq_saida, "\n");
+    }     
+    fprintf(arq_saida, "\n\n");
 
-                int resp = j + (SL->k / 2);
-                if (resp >= i)
-                {
-                    SL->A[i][j] = generateRandomA(i, j, SL->k);
-                }
-                else
-                    SL->A[i][j] = 0.0;
-            }
-            else
-            {
-
-                int resp = j - (SL->k / 2);
-                if (resp <= i)
-                {
-                    SL->A[i][j] = generateRandomA(i, j, SL->k);
-                }
-                else
-                    SL->A[i][j] = 0.0;
-            }
-        }
-        SL->b[i] = generateRandomB(SL->k);
-    }
 }
+

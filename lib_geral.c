@@ -15,165 +15,6 @@ double timestamp(void)
   return((double)(tp.tv_sec + tp.tv_nsec*1.0e-9));
 }
 
-
-void liberarVetor(void *v){
-    if (v)
-        free(v);
-}
-
-
-void liberarMatriz(real_t **matriz) {
-    if (matriz[0])
-        free(matriz[0]);
-    if (matriz)
-        free(matriz);
-}
-
-
-real_t **alocarMatriz(unsigned int n, unsigned int tam_ptr, unsigned int tam_ele) {
-
-    real_t **A;
-    
-    A = malloc(n*tam_ptr);
-    if (! A) {
-        fprintf(stderr, "Não foi possível alocar espaço para o vetor de ponteiros\n");
-        exit(1);
-    }
-
-    A[0] = (real_t*)calloc(n*n, tam_ele);
-    if (!A[0]) {
-        fprintf(stderr, "Não foi possível alocar espaço para o vetor de elementos\n");
-        free(A);
-        exit(1);
-    }
-
-    for (int i = 1; i < n; ++i) {
-        A[i] = A[i - 1] + n;
-    }
-
-    return A;
-}
-
-
-void cpyMatriz(real_t**dest, real_t**ori, unsigned int n) {
-
-    for (int i = 0; i < n; ++i){
-        for (int j = 0; j < n; ++j) {
-            dest[i][j] = ori[i][j];
-        }
-    }
-    
-}
-
-
-void cpyVetor(real_t *dest, real_t *orig, unsigned int *tam)
-{
-
-    for (int i = 0; i < *(tam); ++i)
-    {
-        dest[i] = orig[i];
-    }
-}
-
-
-void *alocarVetor(int tamanho, int size)
-{
-
-    void *v;
-
-    // Aloca espaço na memória e verifica se foi alocado.
-    v = calloc(tamanho, size);
-    if (!v)
-    {
-        fprintf(stderr, "Não foi possível alocadr espaço para o vetor\n");
-        exit(1);
-    }
-
-    return v;
-}
-
-
-real_t multiplicarVtxV(real_t *vt, real_t* v, unsigned int *tam)
-{
-
-    real_t soma = 0.0;
-
-    if (!v) {
-        
-        // o produto de uma matriz 1xN por sua tranposta é o somatório dos elementos ao quadrado
-        for (int i = 0; i < *(tam); ++i)
-        {
-            soma = soma + vt[i] * vt[i];          //overflow
-            if (isnan(soma) || isinf(soma))
-            {
-                fprintf(stderr, "Erro soma(calcularNumeradorEscalarA): %g é NaN ou +/-Infinito\n", soma);
-                exit(1);
-            }
-        }
-        return soma;
-    }
-
-    else {
-
-        //Somatório do produto de dois vetores
-        for (int i = 0; i < *(tam); ++i)
-        {
-            soma = soma + vt[i] * v[i];                //overflow
-            if (isnan(soma) || isinf(soma))
-            {
-                fprintf(stderr, "Erro soma(calcularNumeradorEscalarA): %g é NaN ou +/-Infinito\n", soma);
-                exit(1);
-            }
-        }
-        return soma;
-    }
-
-
-}
-
-
-void calcularMxb(real_t *b, real_t *M, unsigned int n) {
-
-    for (int i = 0; i < n; ++i) {
-        b[i] = M[i] * b[i];
-        if (isnan(b[i]) || isinf(b[i]))
-        {
-            fprintf(stderr, "Erro SL->b[i](calcularMxb): %g é NaN ou +/-Infinito, Linha: %i \n", b[i], i);
-            exit(1);
-        }
-    }
-
-}
-
-
-void calcularMxA(real_t **A, real_t *M, unsigned int n) {
-
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            A[i][j] = A[i][j]*M[i];
-            if (isnan(A[i][j]) || isinf(A[i][j]))
-            {
-                fprintf(stderr, "Erro A[i][j](calcularMxA): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i \n", A[i][j], i, j);
-                exit(1);
-            }
-        }
-    }
-
-}
-
-
-void prnVetor (FILE* arq_saida, real_t *v, unsigned int n)
-{
-    int i;
-
-    fprintf (arq_saida, "\n");
-    for(i=0; i < n; ++i)
-        fprintf (arq_saida, "%.15g ", v[i]);
-    fprintf (arq_saida, "\n\n");
-
-}
-
-
 int verificarArgumentos(int *flags, char *argumentosFaltantes)
 {
 
@@ -263,3 +104,188 @@ int validarArgumentos(char **argumentos, int *tamanhoSL, int *k_diagonais, int *
 
     return 0;
 }
+
+
+void *alocarVetor(int tamanho, int size)
+{
+
+    void *v;
+
+    // Aloca espaço na memória e verifica se foi alocado.
+    v = calloc(tamanho, size);
+    if (!v)
+    {
+        fprintf(stderr, "Não foi possível alocadr espaço para o vetor\n");
+        exit(1);
+    }
+
+    return v;
+}
+
+// Coeficientes_t *calcularTransposta(SistLinear_t *orig){
+
+//     Coeficientes_t *orig_transp = alocarCoeficiente(orig->n, orig->k);
+//     if (! orig_transp) {
+//         perror("Não foi possível alocar espaço para a matriz transposta");
+//         return NULL;
+//     }
+
+//     for (int i = 0; i < (orig->k / 2); ++i){
+//         for (int j = 0; j < orig->n; ++j) {
+//             if (j + i + 1 < orig->n) {
+//                 orig_transp->diagonais_superiores[i][j] = orig->A->diagonais_inferiores[i][j + i + 1];
+//                 orig_transp->diagonais_inferiores[i][j + i + 1] = orig->A->diagonais_superiores[i][j];
+//             }
+//         } 
+//     }
+   
+//     for (int j = 0; j < orig->n; ++j) {
+//         orig_transp->diagonal_princial[j] = orig->A->diagonal_princial[j];
+//     } 
+    
+
+//     return orig_transp;
+// }
+
+// void liberarVetor(void *v){
+//     if (v)
+//         free(v);
+// }
+
+
+// void liberarMatriz(real_t **matriz) {
+//     if (matriz[0])
+//         free(matriz[0]);
+//     if (matriz)
+//         free(matriz);
+// }
+
+
+real_t **alocarMatriz(unsigned int n, unsigned int k, unsigned int tam_ptr, unsigned int tam_ele) {
+
+    real_t **A;
+    
+    A = malloc(n*tam_ptr);
+    if (A) {
+        
+        A[0] = (real_t*)calloc(n*k, tam_ele);
+        if (!A[0]) {
+            fprintf(stderr, "Não foi possível alocar espaço para o vetor de elementos\n");
+            return NULL;
+        }
+        
+        for (int i = 1; i < n; ++i) {
+            A[i] = A[0] + i * k;
+        }
+
+        
+    }
+    return A;
+    
+}
+
+
+// void cpyMatriz(real_t**dest, real_t**ori, unsigned int n) {
+
+//     for (int i = 0; i < n; ++i){
+//         for (int j = 0; j < n; ++j) {
+//             dest[i][j] = ori[i][j];
+//         }
+//     }
+    
+// }
+
+
+void cpyVetor(real_t *dest, real_t *orig, unsigned int *tam)
+{
+
+    for (int i = 0; i < *(tam); ++i)
+    {
+        dest[i] = orig[i];
+    }
+}
+
+
+
+
+// real_t multiplicarVtxV(real_t *vt, real_t* v, unsigned int *tam)
+// {
+
+//     real_t soma = 0.0;
+
+//     if (!v) {
+        
+//         // o produto de uma matriz 1xN por sua tranposta é o somatório dos elementos ao quadrado
+//         for (int i = 0; i < *(tam); ++i)
+//         {
+//             soma = soma + vt[i] * vt[i];          //overflow
+//             if (isnan(soma) || isinf(soma))
+//             {
+//                 fprintf(stderr, "Erro soma(calcularNumeradorEscalarA): %g é NaN ou +/-Infinito\n", soma);
+//                 exit(1);
+//             }
+//         }
+//         return soma;
+//     }
+
+//     else {
+
+//         //Somatório do produto de dois vetores
+//         for (int i = 0; i < *(tam); ++i)
+//         {
+//             soma = soma + vt[i] * v[i];                //overflow
+//             if (isnan(soma) || isinf(soma))
+//             {
+//                 fprintf(stderr, "Erro soma(calcularNumeradorEscalarA): %g é NaN ou +/-Infinito\n", soma);
+//                 exit(1);
+//             }
+//         }
+//         return soma;
+//     }
+
+
+// }
+
+
+// void calcularMxb(real_t *b, real_t *M, unsigned int n) {
+
+//     for (int i = 0; i < n; ++i) {
+//         b[i] = M[i] * b[i];
+//         if (isnan(b[i]) || isinf(b[i]))
+//         {
+//             fprintf(stderr, "Erro SL->b[i](calcularMxb): %g é NaN ou +/-Infinito, Linha: %i \n", b[i], i);
+//             exit(1);
+//         }
+//     }
+
+// }
+
+
+// void calcularMxA(real_t **A, real_t *M, unsigned int n) {
+
+//     for (int i = 0; i < n; ++i) {
+//         for (int j = 0; j < n; ++j) {
+//             A[i][j] = A[i][j]*M[i];
+//             if (isnan(A[i][j]) || isinf(A[i][j]))
+//             {
+//                 fprintf(stderr, "Erro A[i][j](calcularMxA): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i \n", A[i][j], i, j);
+//                 exit(1);
+//             }
+//         }
+//     }
+
+// }
+
+
+// void prnVetor (FILE* arq_saida, real_t *v, unsigned int n)
+// {
+//     int i;
+
+//     fprintf (arq_saida, "\n");
+//     for(i=0; i < n; ++i)
+//         fprintf (arq_saida, "%.15g ", v[i]);
+//     fprintf (arq_saida, "\n\n");
+
+// }
+
+
