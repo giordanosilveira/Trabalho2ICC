@@ -212,8 +212,9 @@ void tornarDiagonalDominante(SistLinear_t *SL) {
     real_t soma = 0.0;
     for (; i < SL->n; ++i){
         for (j = 0; j < SL->k; ++j)
-            soma += SL->A[i][j];
-        SL->A[i][SL->k / 2] = soma;
+            if (j != SL->k/2)
+                soma += SL->A[i][j];
+        SL->A[i][SL->k / 2] += soma;
     }
     
 }

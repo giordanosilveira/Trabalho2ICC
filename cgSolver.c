@@ -40,7 +40,6 @@ int main(int argc, char *argv[])
 {
 
     real_t erro;                // erro tolerado
-    int flagD = 0;              // Flag opcional D                     
     int tamanhoSL;              // Tamanho do Sistema Linear
     int nInteracoes;            // Número de interações
     int k_diagonais;            // Número de diagonais do Sistema
@@ -93,7 +92,6 @@ int main(int argc, char *argv[])
             argumentos[5] = optarg;
             break;
         case 'd':
-            flagD = 1;
             break;
 
         default:
@@ -120,7 +118,6 @@ int main(int argc, char *argv[])
     FILE *arq_saida = fopen(argumentos[5],"w+");
     SistLinear_t *SL;           // Sistema Linear
     SistLinear_t *SLTransp;     // Sistema Linear com os coeficientes transpostos
-    SistLinear_t *SLTranspPorSL;     // Sistema Linear com os coeficientes transpostos
     real_t *x;                  // Vetor de incógnitas
     real_t *residuo;            // Resíduo
     real_t tempo_metodo;        // Tempo médio para calcular o método
