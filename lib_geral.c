@@ -106,6 +106,12 @@ int validarArgumentos(char **argumentos, int *tamanhoSL, int *k_diagonais, int *
 }
 
 
+void liberarVetor(void *v){
+    if (v)
+        free(v);
+}
+
+
 void *alocarVetor(int tamanho, int size)
 {
 
@@ -121,44 +127,6 @@ void *alocarVetor(int tamanho, int size)
 
     return v;
 }
-
-// Coeficientes_t *calcularTransposta(SistLinear_t *orig){
-
-//     Coeficientes_t *orig_transp = alocarCoeficiente(orig->n, orig->k);
-//     if (! orig_transp) {
-//         perror("Não foi possível alocar espaço para a matriz transposta");
-//         return NULL;
-//     }
-
-//     for (int i = 0; i < (orig->k / 2); ++i){
-//         for (int j = 0; j < orig->n; ++j) {
-//             if (j + i + 1 < orig->n) {
-//                 orig_transp->diagonais_superiores[i][j] = orig->A->diagonais_inferiores[i][j + i + 1];
-//                 orig_transp->diagonais_inferiores[i][j + i + 1] = orig->A->diagonais_superiores[i][j];
-//             }
-//         } 
-//     }
-   
-//     for (int j = 0; j < orig->n; ++j) {
-//         orig_transp->diagonal_princial[j] = orig->A->diagonal_princial[j];
-//     } 
-    
-
-//     return orig_transp;
-// }
-
-// void liberarVetor(void *v){
-//     if (v)
-//         free(v);
-// }
-
-
-// void liberarMatriz(real_t **matriz) {
-//     if (matriz[0])
-//         free(matriz[0]);
-//     if (matriz)
-//         free(matriz);
-// }
 
 
 real_t **alocarMatriz(unsigned int n, unsigned int k, unsigned int tam_ptr, unsigned int tam_ele) {
@@ -185,107 +153,150 @@ real_t **alocarMatriz(unsigned int n, unsigned int k, unsigned int tam_ptr, unsi
 }
 
 
-// void cpyMatriz(real_t**dest, real_t**ori, unsigned int n) {
-
-//     for (int i = 0; i < n; ++i){
-//         for (int j = 0; j < n; ++j) {
-//             dest[i][j] = ori[i][j];
-//         }
-//     }
-    
-// }
-
-
 void cpyVetor(real_t *dest, real_t *orig, unsigned int *tam)
 {
 
-    for (int i = 0; i < *(tam); ++i)
+    int i = 0;
+    for (; i < *(tam)-*(tam)%UNROLL; i += UNROLL)
     {
         dest[i] = orig[i];
+        dest[i+1] = orig[i+1];
+        dest[i+2] = orig[i+2];
+        dest[i+3] = orig[i+3];
     }
+    for (; i < *(tam); ++i)
+        dest[i] = orig[i];
 }
 
 
+real_t multiplicarMesmoVtxV(real_t *vt, unsigned int *tam) {
+
+    real_t soma = 0.0;
+    real_t soma_v[UNROLL] = {0.0,0.0,0.0,0.0};
+    int i;
+
+    for (i = 0; i < *(tam)-*(tam) % UNROLL; i += UNROLL){
+        soma_v[0] += vt[i] * vt[i];
+        soma_v[1] += vt[i + 1] * vt[i + 1];
+        soma_v[2] += vt[i + 2] * vt[i + 2];
+        soma_v[UNROLL - 1] += vt[i + 3] * vt[i + 3];
+    }
+
+    soma = soma_v[0] + soma_v[1] + soma_v[2] + soma_v[3];
+    for (; i < (*tam); ++i)
+        soma += vt[i]*vt[i];
+
+    return soma;
+}
+
+real_t multiplicarVtxV(real_t* restrict vt, real_t* restrict v, unsigned int *tam) {
+    
+    int i;
+    real_t soma = 0.0;
+    real_t soma_v[UNROLL] = {0.0,0.0,0.0,0.0};
+    for (int i = 0; i < *(tam)-*(tam) % UNROLL; i += UNROLL){
+        soma_v[0] += vt[i] * v[i];
+        soma_v[1] += vt[i + 1] * v[i + 1];
+        soma_v[2] += vt[i + 2] * v[i + 2];
+        soma_v[UNROLL - 1] += vt[i + 3] * v[i + 3];
+    }
+    soma = soma_v[0] + soma_v[1] + soma_v[2] + soma_v[3];
+    for (; i < (*tam); ++i)
+        soma += vt[i]*v[i];
+
+    return soma;
+}
 
 
-// real_t multiplicarVtxV(real_t *vt, real_t* v, unsigned int *tam)
-// {
+void multiplicarMatrizPorVetor(SistLinear_t *SL, real_t *v, real_t *resultado) {
 
-//     real_t soma = 0.0;
+    int i = 0;
+    int j;
+    int k = 0;
+    real_t soma;
+    for (; i < (SL->k/2); ++i) {
+        soma = 0.0;
+        for (j = (SL->k/2) - i; j < SL->k; ++j) {
+            soma += SL->A[i][j] * v[k];
+            ++k;
+        }
+        resultado[i] = soma;
+        k = 0;
+    }
 
-//     if (!v) {
-        
-//         // o produto de uma matriz 1xN por sua tranposta é o somatório dos elementos ao quadrado
-//         for (int i = 0; i < *(tam); ++i)
-//         {
-//             soma = soma + vt[i] * vt[i];          //overflow
-//             if (isnan(soma) || isinf(soma))
-//             {
-//                 fprintf(stderr, "Erro soma(calcularNumeradorEscalarA): %g é NaN ou +/-Infinito\n", soma);
-//                 exit(1);
-//             }
-//         }
-//         return soma;
-//     }
+    int deslocamento = 0;
+    for (; i < SL->n - (SL->k / 2); ++i) {
+        soma = 0.0;
+        for (j = 0; j < SL->k; ++j) {
+            soma += SL->A[i][j] * v[j + deslocamento];
+        }
+        resultado[i] = soma;
+        ++deslocamento;
+    }
 
-//     else {
+    k = 1;
+    for (; i < SL->n; ++i){
+        soma = 0.0;
+        for (j = 0; j < SL->k - k; ++j) {
+           soma += SL->A[i][j] * v[j + deslocamento]; 
+        }
+        ++deslocamento;
+        resultado[i] = soma;
+        ++k;
+    }
 
-//         //Somatório do produto de dois vetores
-//         for (int i = 0; i < *(tam); ++i)
-//         {
-//             soma = soma + vt[i] * v[i];                //overflow
-//             if (isnan(soma) || isinf(soma))
-//             {
-//                 fprintf(stderr, "Erro soma(calcularNumeradorEscalarA): %g é NaN ou +/-Infinito\n", soma);
-//                 exit(1);
-//             }
-//         }
-//         return soma;
-//     }
-
-
-// }
-
-
-// void calcularMxb(real_t *b, real_t *M, unsigned int n) {
-
-//     for (int i = 0; i < n; ++i) {
-//         b[i] = M[i] * b[i];
-//         if (isnan(b[i]) || isinf(b[i]))
-//         {
-//             fprintf(stderr, "Erro SL->b[i](calcularMxb): %g é NaN ou +/-Infinito, Linha: %i \n", b[i], i);
-//             exit(1);
-//         }
-//     }
-
-// }
+}
 
 
-// void calcularMxA(real_t **A, real_t *M, unsigned int n) {
+void multiplicarVetorPorVetor(real_t* restrict v1, real_t* restrict v2, unsigned int *n){
 
-//     for (int i = 0; i < n; ++i) {
-//         for (int j = 0; j < n; ++j) {
-//             A[i][j] = A[i][j]*M[i];
-//             if (isnan(A[i][j]) || isinf(A[i][j]))
-//             {
-//                 fprintf(stderr, "Erro A[i][j](calcularMxA): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i \n", A[i][j], i, j);
-//                 exit(1);
-//             }
-//         }
-//     }
+    int i = 0;
+    for (; i < *(n)-*(n)%UNROLL; i += UNROLL){
+        v1[i] = v2[i] * v1[i];
+        v1[i + 1] = v2[i + 1] * v1[i + 1];
+        v1[i + 2] = v2[i + 2] * v1[i + 2];
+        v1[i + 3] = v2[i + 3] * v1[i + 3];
+    }
+    for (; i < *(n); ++i)
+        v1[i] = v2[i] * v1[i];
+    
+    // if (isnan(b[i]) || isinf(b[i]))
+    //     {
+    //         fprintf(stderr, "Erro SL->b[i](calcularMxb): %g é NaN ou +/-Infinito, Linha: %i \n", b[i], i);
+    //         exit(1);
+    //     }
 
-// }
+}
 
+void multiplicarVetorPorMatriz(real_t *vetor, SistLinear_t *SL){
 
-// void prnVetor (FILE* arq_saida, real_t *v, unsigned int n)
-// {
-//     int i;
+    int i;
+    int j;
+    for (i = 0; i < SL->n-(SL->n%UNROLL); i += UNROLL) {
+        for (j = 0; j < SL->k; ++j) {
+            SL->A[i][j] = vetor[i] * SL->A[i][j];
+            SL->A[i+1][j] = vetor[i+1] * SL->A[i+1][j];
+            SL->A[i+2][j] = vetor[i+2] * SL->A[i+2][j];
+            SL->A[i+3][j] = vetor[i+3] * SL->A[i+3][j];
+        }
+    }
 
-//     fprintf (arq_saida, "\n");
-//     for(i=0; i < n; ++i)
-//         fprintf (arq_saida, "%.15g ", v[i]);
-//     fprintf (arq_saida, "\n\n");
+    for (; i < SL->n; ++i) {
+        for (j = 0; j < SL->k; ++j)
+            SL->A[i][j] = vetor[i] * SL->A[i][j];
+    }
 
-// }
+}
+
+void prnVetor (FILE* arq_saida, real_t *v, unsigned int n)
+{
+    int i;
+
+    fprintf (arq_saida, "\n");
+    for(i=0; i < n; ++i)
+        fprintf (arq_saida, "%.15g ", v[i]);
+    fprintf (arq_saida, "\n\n");
+
+}
 
 

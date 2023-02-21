@@ -111,6 +111,9 @@ void initSistLinear(SistLinear_t *sistl) {
         ++k; 
     }
 
+    for (int i = 0; i < sistl->n; ++i)
+        sistl->b[i] = generateRandomB(sistl->k);
+
 }
 
 /**
@@ -160,127 +163,142 @@ SistLinear_t* calcularTransposta(SistLinear_t *original) {
 }
 
 
-// void liberarGradientes(Gradiente_t *grad){
+void liberarGradientes(Gradiente_t *grad){
 
-//     if (grad) {
-//         if (grad->aux_A[0])
-//             free(grad->aux_A[0]);
-//         if (grad->aux_A)
-//             free(grad->aux_A);
-//         if (grad->aux_b)
-//             free(grad->aux_b);
-//         if (grad->vetor_d)
-//             free(grad->vetor_d);
-//         if (grad->vetor_r)
-//             free(grad->vetor_r);
-//         if (grad->vetor_r0)
-//             free(grad->vetor_r0);
-//         if (grad->vetor_x0)
-//             free(grad->vetor_x0);
-//     }
-//     free(grad);
+    if (grad) {
 
-// }
-
-
-// Gradiente_t* alocarGradiente(unsigned int n) {
-
-//     Gradiente_t *grad = malloc(sizeof(Gradiente_t));
-//     if (grad) {
+        if (grad->vetor_d)
+            free(grad->vetor_d);
+        if (grad->vetor_r)
+            free(grad->vetor_r);
+        if (grad->vetor_r0)
+            free(grad->vetor_r0);
+        if (grad->vetor_x0)
+            free(grad->vetor_x0);
         
-//         grad->aux_A = alocarMatriz(n, sizeof(real_t*), sizeof(real_t));
+        free(grad);
 
-//         grad->aux_b = (real_t*)alocarVetor(n, sizeof(real_t));
-//         if (! grad->aux_b) {
-//             fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
-//             free(grad->aux_b);
-//             exit(1);
-//         }
-//         grad->vetor_d = (real_t*)alocarVetor(n, sizeof(real_t));
-//         if (! grad->vetor_d) {
-//             fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
-//             free(grad->aux_b);
-//             free(grad->vetor_d);
-//             exit(1);
-//         }
-//         grad->vetor_r0 = (real_t*)alocarVetor(n, sizeof(real_t));
-//         if (! grad->vetor_r0) {
-//             fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
-//             free(grad->aux_b);
-//             free(grad->vetor_d);
-//             free(grad->vetor_r0);
-//             exit(1);
-//         }
-//         grad->vetor_r = (real_t*)alocarVetor(n, sizeof(real_t));
-//         if (! grad->vetor_r) {
-//             fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
-//             free(grad->aux_b);
-//             free(grad->vetor_d);
-//             free(grad->vetor_r0);
-//             free(grad->vetor_r);
-//             exit(1);
-//         }
-//         grad->vetor_x0 = (real_t*)alocarVetor(n, sizeof(real_t));
-//         if (! grad->vetor_x0) {
-//             fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
-//             free(grad->aux_b);
-//             free(grad->vetor_d);
-//             free(grad->vetor_r0);
-//             free(grad->vetor_r);
-//             free(grad->vetor_x0);
-//             exit(1);
-//         }
-//     }
-//     return grad;
+    }
 
-// }
+}
 
 
-// void tornarDiagonalDominante(SistLinear_t *SL) {
+Gradiente_t* alocarGradiente(unsigned int n) {
 
-//     real_t soma;
+    Gradiente_t *grad = malloc(sizeof(Gradiente_t));
+    if (grad) {
 
-//     int i = 0;
-//     while (i < (SL->k / 2) + 1) {
-//         soma = 0.0;
-//         for (int j = 0; j <= (SL->k / 2) + i; ++j) {
-//             soma = soma + SL->A[i][j];
-//         }
-//         SL->A[i][i] = soma + 1.0;
-//         ++i;
-//     }
+        grad->vetor_d = (real_t*)alocarVetor(n, sizeof(real_t));
+        grad->vetor_r = (real_t*)alocarVetor(n, sizeof(real_t));
+        grad->vetor_r0 = (real_t*)alocarVetor(n, sizeof(real_t));
+        grad->vetor_x0 = (real_t*)alocarVetor(n, sizeof(real_t));
 
-//     int m = 1;
-//     for (i = (SL->k / 2) + 1; i < SL->n; ++i){
-//         soma = 0.0;
-//         for (int j = m; j <= SL->k + m && j < SL->n; ++j){
-//             soma = soma + SL->A[i][j];
-//         }
-//         ++m;
-//         SL->A[i][i] = soma + 1.0;
-//     }
-// }
+        if (!grad->vetor_d || !grad->vetor_r || !grad->vetor_r0 || !grad->vetor_x0) {
+            fprintf(stderr, "Erro ao alocar as estruturas do gradiente\n");
+            liberarGradientes(grad);
+        }
+
+        return grad;
+    }
+
+    return grad;
+}
 
 
-// void calcularResiduo(real_t**coef, real_t *residuo, real_t*b, real_t *x, int n)
-// {
+void tornarDiagonalDominante(SistLinear_t *SL) {
 
-//     // Percorre a matriz, realiza a soma da linha e tira do resíduo.
-//     for (int i = 0; i < n; ++i)
-//     {
-//         real_t soma = 0.0;
-//         for (int j = 0; j < n; ++j)
-//         {
-//             soma = soma + coef[i][j] * x[j];               //overflow
-//             if (isnan(soma) || isinf(soma))
+    int i = 0;
+    int j;
+    real_t soma = 0.0;
+    for (; i < SL->n; ++i){
+        for (j = 0; j < SL->k; ++j)
+            soma += SL->A[i][j];
+        SL->A[i][SL->k / 2] = soma;
+    }
+    
+}
+
+
+void calcularResiduo(SistLinear_t *SL, real_t *residuo, real_t *x, int n)
+{
+    int i = 0;
+    int j;
+    int k = 0;
+    real_t soma;
+    for (; i < (SL->k/2); ++i) {
+        soma = 0.0;
+        for (j = (SL->k/2) - i; j < SL->k; ++j) {
+            soma += SL->A[i][j] * x[k];
+            ++k;
+        }
+        residuo[i] = SL->b[i] - soma;
+        k = 0;
+    }
+
+    int deslocamento = 0;
+    for (; i < SL->n - (SL->k / 2); ++i) {
+        soma = 0.0;
+        for (j = 0; j < SL->k; ++j) {
+            soma += SL->A[i][j] * x[j + deslocamento];
+        }
+        residuo[i] = SL->b[i] - soma;
+        ++deslocamento;
+    }
+
+    k = 1;
+    for (; i < SL->n; ++i){
+        soma = 0.0;
+        for (j = 0; j < SL->k - k; ++j) {
+           soma += SL->A[i][j] * x[j + deslocamento]; 
+        }
+        ++deslocamento;
+        residuo[i] = SL->b[i] - soma;
+        ++k;
+    }
+
+// if (isnan(soma) || isinf(soma))
 //             {
 //                 fprintf(stderr, "Erro soma(calcularResiduo): %g é NaN ou +/-Infinito\n", soma);
 //                 exit(1);
 //             } 
-//         }
-//         residuo[i] = b[i] - soma;
-//     }
-// }
+}
+
+
+real_t calcularNormaL2Residuo(SistLinear_t *SL, real_t *x, real_t *tempo)
+{
+
+    real_t soma_v[UNROLL] = {0.0, 0.0, 0.0, 0.0};
+    real_t soma = 0.0;
+    real_t raiz;
+    int i = 0;
+
+    // Pecorre o vetor de soluções
+    *tempo = timestamp();
+    for (; i < SL->n-(SL->n%UNROLL); i += UNROLL) {
+
+        // Soma o quadrado dos elementos das soluções
+        soma_v[0] = soma_v[0] + x[i]*x[i];
+        soma_v[1] = soma_v[1] + x[i+1]*x[i+1];
+        soma_v[2] = soma_v[2] + x[i+2]*x[i+2];
+        soma_v[3] = soma_v[3] + x[i+3]*x[i+3];
+        // if (isnan(soma) || isinf(soma))
+        // {
+        //     fprintf(stderr, "Erro soma(calcularNormaL2Residuo): %g é NaN ou +/-Infinito\n", soma);
+        //     exit(1);
+        // }
+
+    }
+    soma = soma_v[0] + soma_v[1] + soma_v[2] + soma_v[3]; 
+    for(; i < SL->n; ++i)
+        soma = soma + x[i]*x[i];
+        
+    raiz = sqrt(soma);
+    *tempo = timestamp() - *tempo;
+
+    // Retorna a raíz quadrada da soma.
+    return raiz;
+
+}
 
 
 // real_t *calcularAtxB(SistLinear_t *SL) {
@@ -307,47 +325,61 @@ SistLinear_t* calcularTransposta(SistLinear_t *original) {
 
 SistLinear_t *calcularMatrizAtxA(SistLinear_t* SL) {
 
-    SistLinear_t* AtxA = alocarSisLin(SL->n, SL->k + 2, SL->p);
+    SistLinear_t* AtxA = alocarSisLin(SL->n, SL->k + (SL->k - 1), SL->p);
     real_t *linha = (real_t*)alocarVetor(SL->k, sizeof(real_t));
     real_t soma = 0.0;
 
     if (AtxA && linha) {
         
-        int i;
+        int i = 0;
         int j;
         int m;
-        int deslocamento = 0;
-
+        
+        int deslocamento;
         int start = (AtxA->k / 2);
-        for (i = 0; i < SL->n; ++i) { 
-            for (m = i; m <= ((SL->k / 2) + i + 1) && (m < SL->n); ++m) {
+        for (; i < SL->k/2; ++i){
+            deslocamento = 0;
+            for (m = i; m < (SL->k + i) && (m < SL->n); ++m){
                 soma = 0.0;
-                for (j = 0; (j < SL->k); ++j){
-                       
-                    if (j - deslocamento > -1) {
-                       soma += SL->A[i][j]*SL->A[m][j - deslocamento];
-                       if (isnan(soma) || isinf(soma))
-                        {
-                            //fprintf(stderr, "Erro A[i][j](calcularMatrizAxAt): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i\n", A[i][j], i, j);
-                            liberarSisLin(AtxA);
-                            exit(1);
-                        }
-                    }
+                for (j = SL->k/2 - i; j < SL->k; ++j){
+                    if (j - deslocamento > -1)
+                        soma += SL->A[i][j]*SL->A[m][j - deslocamento];
                 }
                 AtxA->A[i][start] = soma;
                 if (i + deslocamento < SL->n)
                     AtxA->A[i + deslocamento][(AtxA->k / 2) - deslocamento] = soma;
-                
-                deslocamento++;
-                
 
-                //fazer a cópia para a diagonal inferior
+                deslocamento++;
                 start++;
             }
-            deslocamento = 0;            
             start = (AtxA->k / 2);
         }
+        
+        
+        for (; i < SL->n; ++i){
+            deslocamento = 0;
+            for(m = i; m < (SL->k + i) && (m < SL->n); ++m){
+                soma = 0.0;
+                for (j = 0; j < SL->k; ++j) {
+                    if (j - deslocamento > -1)
+                        soma += SL->A[i][j]*SL->A[m][j - deslocamento];
+                }
+                AtxA->A[i][start] = soma;
+                if (i + deslocamento < SL->n)
+                    AtxA->A[i + deslocamento][(AtxA->k / 2) - deslocamento] = soma;
 
+                deslocamento++;
+                start++;
+            }
+            start = (AtxA->k / 2);
+        }
+        //    if (isnan(soma) || isinf(soma))
+        //     {
+        //         //fprintf(stderr, "Erro A[i][j](calcularMatrizAxAt): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i\n", A[i][j], i, j);
+        //         liberarSisLin(AtxA);
+        //         exit(1);
+        //     }
+        
     }
     
     return AtxA;
@@ -382,6 +414,7 @@ void prnSisLin(FILE* arq_saida, SistLinear_t *SL)
     {
         for (int j = 0; j < SL->k; ++j)
             fprintf(arq_saida, "%10g ", SL->A[i][j]);
+        fprintf(arq_saida, "|%10g ", SL->b[i]);
         fprintf(arq_saida, "\n");
     }     
     fprintf(arq_saida, "\n\n");

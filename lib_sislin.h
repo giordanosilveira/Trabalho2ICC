@@ -19,8 +19,6 @@ typedef struct
 //Representa as estruturas internas (não todas) usadas dentro do cálculo do método
 typedef struct {
 
-    real_t **aux_A;     //Cópia da matriz original
-    real_t *aux_b;      //Cópia dos termos independentes originais 
     real_t *vetor_r;    //Resíduo
     real_t *vetor_r0;   //Resíduo anterior
     real_t *vetor_d;    //Próxima direção (chamado de 'v' no livro da M.Cristina C. Cunha)
@@ -31,42 +29,52 @@ typedef struct {
 } Gradiente_t;          //Representa as estruturas internas (não todas) usadas dentro do cálculo do método
 
 
-// /**
-//  * @brief Libera a estrutura apontada por 'grad'
-//  * 
-//  * @param grad (Gradiente_t*) : Ponteiro para a estrutura gradiente.
-//  */
-// void liberarGradientes(Gradiente_t *grad);
+/**
+ * @brief Libera a estrutura apontada por 'grad'
+ * 
+ * @param grad (Gradiente_t*) : Ponteiro para a estrutura gradiente.
+ */
+void liberarGradientes(Gradiente_t *grad);
 
 
-// /**
-//  * @brief Aloca espaço na memória para o tipo Grandiente e sua estruturas internas
-//  * 
-//  * @param n (unsigned int) : Tamanho do dos vetores.
-//  * @return (Gradiente_t*) : Ponteiro para essa estrutura. 
-//  */
-// Gradiente_t* alocarGradiente(unsigned int n);
+/**
+ * @brief Aloca espaço na memória para o tipo Grandiente e sua estruturas internas
+ * 
+ * @param n (unsigned int) : Tamanho do dos vetores.
+ * @return (Gradiente_t*) : Ponteiro para essa estrutura. 
+ */
+Gradiente_t* alocarGradiente(unsigned int n);
 
 
-// /**
-//  * @brief Modifica os coeficientes da matriz A do sistema linear
-//  * para que ela fique diagonal dominante.
-//  * 
-//  * @param SL (SistLinear_t*) : O Sistema Linear.
-//  */
-// void tornarDiagonalDominante(SistLinear_t *SL);
+/**
+ * @brief Modifica os coeficientes da matriz A do sistema linear
+ * para que ela fique diagonal dominante.
+ * 
+ * @param SL (SistLinear_t*) : O Sistema Linear.
+ */
+void tornarDiagonalDominante(SistLinear_t *SL);
 
 
-// /**
-//  * @brief Calcula o resíduo.
-//  * 
-//  * @param coef (real_t**) : Coeficientes do sistema linear.
-//  * @param residuo (real_t*) : Vetor onde será colocado o resíduo.
-//  * @param b (real_t*) : Termos independentes.
-//  * @param x (real_t*) : Vetor com as soluções.
-//  * @param n (unsigned int) : Tamanho do vetor.
-//  */
-// void calcularResiduo(real_t**coef, real_t *residuo, real_t*b, real_t *x, int n);
+/**
+ * @brief 
+ * 
+ * @param SL 
+ * @param residuo 
+ * @param x 
+ * @param n 
+ */
+void calcularResiduo(SistLinear_t *SL, real_t *residuo, real_t *x, int n);
+
+
+/**
+ * @brief Calcula a norma L2 do vetor com as soluções 'x'
+ * 
+ * @param tempo (real_t*) : Ponteiro onde será guardado o tempo do cálculo da norma.
+ * @param SL (SistLinear_t*) : O sistema linear.
+ * @param x (real_t*) : O Vetor com as soluções
+ * @return (real_t) : Norma L2 do vetor. 
+ */
+real_t calcularNormaL2Residuo(SistLinear_t *SL, real_t *x, real_t *tempo);
 
 
 // /**
