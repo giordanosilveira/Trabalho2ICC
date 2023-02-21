@@ -325,47 +325,61 @@ real_t calcularNormaL2Residuo(SistLinear_t *SL, real_t *x, real_t *tempo)
 
 SistLinear_t *calcularMatrizAtxA(SistLinear_t* SL) {
 
-    SistLinear_t* AtxA = alocarSisLin(SL->n, SL->k + 2, SL->p);
+    SistLinear_t* AtxA = alocarSisLin(SL->n, SL->k + (SL->k - 1), SL->p);
     real_t *linha = (real_t*)alocarVetor(SL->k, sizeof(real_t));
     real_t soma = 0.0;
 
     if (AtxA && linha) {
         
-        int i;
+        int i = 0;
         int j;
         int m;
-        int deslocamento = 0;
-
+        
+        int deslocamento;
         int start = (AtxA->k / 2);
-        for (i = 0; i < SL->n; ++i) { 
-            for (m = i; m <= ((SL->k / 2) + i + 1) && (m < SL->n); ++m) {
+        for (; i < SL->k/2; ++i){
+            deslocamento = 0;
+            for (m = i; m < (SL->k + i) && (m < SL->n); ++m){
                 soma = 0.0;
-                for (j = 0; (j < SL->k); ++j){
-                       
-                    if (j - deslocamento > -1) {
-                       soma += SL->A[i][j]*SL->A[m][j - deslocamento];
-                       if (isnan(soma) || isinf(soma))
-                        {
-                            //fprintf(stderr, "Erro A[i][j](calcularMatrizAxAt): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i\n", A[i][j], i, j);
-                            liberarSisLin(AtxA);
-                            exit(1);
-                        }
-                    }
+                for (j = SL->k/2 - i; j < SL->k; ++j){
+                    if (j - deslocamento > -1)
+                        soma += SL->A[i][j]*SL->A[m][j - deslocamento];
                 }
                 AtxA->A[i][start] = soma;
                 if (i + deslocamento < SL->n)
                     AtxA->A[i + deslocamento][(AtxA->k / 2) - deslocamento] = soma;
-                
-                deslocamento++;
-                
 
-                //fazer a cópia para a diagonal inferior
+                deslocamento++;
                 start++;
             }
-            deslocamento = 0;            
             start = (AtxA->k / 2);
         }
+        
+        
+        for (; i < SL->n; ++i){
+            deslocamento = 0;
+            for(m = i; m < (SL->k + i) && (m < SL->n); ++m){
+                soma = 0.0;
+                for (j = 0; j < SL->k; ++j) {
+                    if (j - deslocamento > -1)
+                        soma += SL->A[i][j]*SL->A[m][j - deslocamento];
+                }
+                AtxA->A[i][start] = soma;
+                if (i + deslocamento < SL->n)
+                    AtxA->A[i + deslocamento][(AtxA->k / 2) - deslocamento] = soma;
 
+                deslocamento++;
+                start++;
+            }
+            start = (AtxA->k / 2);
+        }
+        //    if (isnan(soma) || isinf(soma))
+        //     {
+        //         //fprintf(stderr, "Erro A[i][j](calcularMatrizAxAt): %g é NaN ou +/-Infinito, Linha: %i, Coluna: %i\n", A[i][j], i, j);
+        //         liberarSisLin(AtxA);
+        //         exit(1);
+        //     }
+        
     }
     
     return AtxA;

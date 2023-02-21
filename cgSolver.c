@@ -120,6 +120,7 @@ int main(int argc, char *argv[])
     FILE *arq_saida = fopen(argumentos[5],"w+");
     SistLinear_t *SL;           // Sistema Linear
     SistLinear_t *SLTransp;     // Sistema Linear com os coeficientes transpostos
+    SistLinear_t *SLTranspPorSL;     // Sistema Linear com os coeficientes transpostos
     real_t *x;                  // Vetor de incógnitas
     real_t *residuo;            // Resíduo
     real_t tempo_metodo;        // Tempo médio para calcular o método
@@ -137,7 +138,7 @@ int main(int argc, char *argv[])
     tornarDiagonalDominante(SL);
     
     SLTransp = calcularTransposta(SL);
-
+    
     gradienteConjugadosCPreCondicionadores(arq_saida, SL, SLTransp, x, &tempo_metodo, &tempo_preparacao, ERRO_IT, nInteracoes);
 
     calcularResiduo(SL, residuo, x, SL->n);
