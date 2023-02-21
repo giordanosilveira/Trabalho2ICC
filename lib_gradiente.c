@@ -146,12 +146,12 @@ static inline void inverse_jacobi_preconditioner(SistLinear_t *SL, real_t *M)
 }
 
 /**
- * @brief 
+ * @brief Calcula o erro avsoluto entre a solução anterior e a solução atual.
  * 
- * @param x 
- * @param x0 
- * @param maior_erro_max_abs 
- * @param tam 
+ * @param x (real_t*) : Vetor com a solução atual.
+ * @param x0 (real_t*) : Vetor com a solução anterior.
+ * @param maior_erro_max_abs (real_t*) : Ponteiro onde será guardado o maior erro absoluto.
+ * @param tam (unsigned int*) : tamanoh dos vetores.
  */
 static inline void normaMaxErroAbsoluto(real_t *x, real_t *x0, real_t *maior_erro_max_abs, unsigned int *tam)
 {
@@ -244,6 +244,8 @@ int gradienteConjugadosCPreCondicionadores(FILE*arq_saida, SistLinear_t *SL, Sis
     liberarVetor(vetor_z);
     liberarVetor(vetor_z0);
     liberarVetor(matrix_M);
+    liberarVetor(vetor_y);
+    liberarSisLin(SLTranspXSL);
     
 
     return 0;

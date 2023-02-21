@@ -56,12 +56,12 @@ void tornarDiagonalDominante(SistLinear_t *SL);
 
 
 /**
- * @brief 
+ * @brief Calcula o resíduo para um sistema linear.
  * 
- * @param SL 
- * @param residuo 
- * @param x 
- * @param n 
+ * @param SL (SistLinear_t*) : Sistema Linear.
+ * @param residuo (real_t*) : Vetor onde será colocado o resíduo.
+ * @param x (real_t*) : Vetor com as soluções.
+ * @param n (int) : Tamanho dos vetores. 
  */
 void calcularResiduo(SistLinear_t *SL, real_t *residuo, real_t *x, int n);
 
@@ -75,16 +75,6 @@ void calcularResiduo(SistLinear_t *SL, real_t *residuo, real_t *x, int n);
  * @return (real_t) : Norma L2 do vetor. 
  */
 real_t calcularNormaL2Residuo(SistLinear_t *SL, real_t *x, real_t *tempo);
-
-
-// /**
-//  * @brief Transforma o termos independentes para ser possível efetuar
-//  * o método dos Gradientes Conjugados. Isto é, A^t (Coeficientes) x B (Termos independentes).
-//  * 
-//  * @param SL (SistLinear_t) : O Sistema Linear.
-//  * @return (real_t*) : O resultado de b vezes A^t 
-//  */
-// real_t *calcularAtxB(SistLinear_t *SL);
 
 
 /**
@@ -132,18 +122,18 @@ SistLinear_t *alocarSisLin(unsigned int n, unsigned int k, unsigned int p);
 void initSistLinear(SistLinear_t *SL);
 
 /**
- * @brief 
+ * @brief Calcula os sistema linear com os coeficientes transpostos.
  * 
- * @param original 
- * @return SistLinear_t* 
+ * @param original (SistLinear_t*) : Sistema Linear original
+ * @return SistLinear_t* : Sistema Linear com os coeficientes transpostos. 
  */
 SistLinear_t* calcularTransposta(SistLinear_t *original);
 
 /**
- * @brief 
+ * @brief Copia um sistema linear inteiro.
  * 
- * @param orig 
- * @param dest 
+ * @param orig (SistLinear_t*) : Sistema Linear originário. 
+ * @param dest (SistLinear_t*) : Sistema Linear copiado.
  */
 void copiarSistLinear(SistLinear_t*orig, SistLinear_t *dest);
 

@@ -45,7 +45,7 @@ int verificarArgumentos(int *flags, char *argumentosFaltantes);
 int validarArgumentos(char **argumentos, int *tamanhoSL, int *k_diagonais, int *nInteracoes, int *pre_condicionador, real_t *erro);
 
 /**
- * @brief Se for possível, libera o vetor 'v'
+ * @brief Se for possível, libera o vetor 'v'.
  * 
  * @param v (void *) : vetor para ser liberado.
  */
@@ -76,11 +76,11 @@ void *alocarVetor(int tamanho, int size);
 
 
 /**
- * @brief Copia um vetor para outro
+ * @brief Copia um vetor para outro.
  *
- * @param dest (real_t*) : vetor destino
- * @param orig (real_t*) : vetor origem
- * @param tam (int) : tamanho dos vetores
+ * @param dest (real_t*) : vetor destino.
+ * @param orig (real_t*) : vetor origem.
+ * @param tam (int) : tamanho dos vetores.
  */
 void cpyVetor(real_t *orig, real_t *dest, unsigned int *tam);
 
@@ -89,9 +89,9 @@ void cpyVetor(real_t *orig, real_t *dest, unsigned int *tam);
  * @brief Calcula o vetor transposto 'vt' pelo vetor 'v'. Isso resulta em uma
  * matriz 1x1, ou seja, um número real.
  * 
- * @param vt 
- * @param tam 
- * @return real_t 
+ * @param vt (real_t*) : Vetor que será multiplicado.
+ * @param tam (unsigned int*) : Tamanho do vetor.
+ * @return real_t : o resultado da multiplicação dos dos vetores.
  */
 real_t multiplicarMesmoVtxV(real_t *vt, unsigned int *tam);
 
@@ -109,48 +109,33 @@ real_t multiplicarVtxV(real_t* restrict vt, real_t* restrict v, unsigned int *ta
 
 
 /**
- * @brief 
+ * @brief Multiplica uma matriz por um vetor. Levando em conta que não
+ * é uma matriz completa, mas sim, só suas diagonais.
  * 
- * @param SL 
- * @param v 
- * @param resultado 
+ * @param SL (SistLinear_t*) : O Sistema Linear cuja matriz de coeficientes será usada.
+ * @param v (real_t*) : Vetor.
+ * @param resultado (real_t*) : Vetor onde será colocado o resultado da multiplicação.
  */
 void multiplicarMatrizPorVetor(SistLinear_t *SL, real_t *v, real_t *resultado);
 
 /**
- * @brief 
+ * @brief Multiplica um vetor por uma matriz. Levando em conta que não
+ * é uma matriz completa, mas sim, só suas diagonais.
  * 
- * @param vetor 
- * @param SL 
+ * @param vetor (real_t*) : Vetor.
+ * @param SL (SistLinear_t*) : O Sistema Linear cuja matriz de coeficientes será usada.
  */
 void multiplicarVetorPorMatriz(real_t *vetor, SistLinear_t *SL);
 
 /**
- * @brief 
+ * @brief Multiplica um vetor v1 por um vetor v2.
  * 
- * @param v1 
- * @param v2 
- * @param n 
+ * @param v1 (real_t*) : Vetor v1.
+ * @param v2 (real_t*) : Vetor v2.
+ * @param n (unsigned int *) : Tamanho dos vetores.
  */
 void multiplicarVetorPorVetor(real_t* restrict v1, real_t* restrict v2, unsigned int *n);
 
-// /**
-//  * @brief multiplica a matriz M (vetor com a diagonal principal) com um vetor 'b'.
-//  * 
-//  * @param b (real_t*) : Vetor b (geralmente os termos independentes.)
-//  * @param M (real_t*) : Vetor M (geralmente o vetor contendo os elementos da diagonal principal da matriz).
-//  * @param n (unsigned int) : Tamanho dos vetores
-//  */
-// void calcularMxb(real_t *b, real_t *M, unsigned int n);
-
-// /**
-//  * @brief multiplica a matriz A pelo vetor M.
-//  * 
-//  * @param A (real_t**) : Matriz A (geralmente os coeficientes do sistema)
-//  * @param M (real_t*) : matriz M (geralmente o vetor contendo a diagonal principal da matriz A)
-//  * @param n (unsigned int) : Dimensão da matriz e do vetor.
-//  */
-// void calcularMxA(real_t **A, real_t *M, unsigned int n);
 
 
 /**
