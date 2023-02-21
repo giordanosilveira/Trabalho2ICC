@@ -219,25 +219,86 @@ void tornarDiagonalDominante(SistLinear_t *SL) {
 }
 
 
-// void calcularResiduo(real_t**coef, real_t *residuo, real_t*b, real_t *x, int n)
-// {
+void calcularResiduo(SistLinear_t *SL, real_t *residuo, real_t *x, int n)
+{
+    int i = 0;
+    int j;
+    int k = 0;
+    real_t soma;
+    for (; i < (SL->k/2); ++i) {
+        soma = 0.0;
+        for (j = (SL->k/2) - i; j < SL->k; ++j) {
+            soma += SL->A[i][j] * x[k];
+            ++k;
+        }
+        residuo[i] = SL->b[i] - soma;
+        k = 0;
+    }
 
-//     // Percorre a matriz, realiza a soma da linha e tira do resíduo.
-//     for (int i = 0; i < n; ++i)
-//     {
-//         real_t soma = 0.0;
-//         for (int j = 0; j < n; ++j)
-//         {
-//             soma = soma + coef[i][j] * x[j];               //overflow
-//             if (isnan(soma) || isinf(soma))
+    int deslocamento = 0;
+    for (; i < SL->n - (SL->k / 2); ++i) {
+        soma = 0.0;
+        for (j = 0; j < SL->k; ++j) {
+            soma += SL->A[i][j] * x[j + deslocamento];
+        }
+        residuo[i] = SL->b[i] - soma;
+        ++deslocamento;
+    }
+
+    k = 1;
+    for (; i < SL->n; ++i){
+        soma = 0.0;
+        for (j = 0; j < SL->k - k; ++j) {
+           soma += SL->A[i][j] * x[j + deslocamento]; 
+        }
+        ++deslocamento;
+        residuo[i] = SL->b[i] - soma;
+        ++k;
+    }
+
+// if (isnan(soma) || isinf(soma))
 //             {
 //                 fprintf(stderr, "Erro soma(calcularResiduo): %g é NaN ou +/-Infinito\n", soma);
 //                 exit(1);
 //             } 
-//         }
-//         residuo[i] = b[i] - soma;
-//     }
-// }
+}
+
+
+real_t calcularNormaL2Residuo(SistLinear_t *SL, real_t *x, real_t *tempo)
+{
+
+    real_t soma_v[UNROLL] = {0.0, 0.0, 0.0, 0.0};
+    real_t soma = 0.0;
+    real_t raiz;
+    int i = 0;
+
+    // Pecorre o vetor de soluções
+    *tempo = timestamp();
+    for (; i < SL->n-(SL->n%UNROLL); i += UNROLL) {
+
+        // Soma o quadrado dos elementos das soluções
+        soma_v[0] = soma_v[0] + x[i]*x[i];
+        soma_v[1] = soma_v[1] + x[i+1]*x[i+1];
+        soma_v[2] = soma_v[2] + x[i+2]*x[i+2];
+        soma_v[3] = soma_v[3] + x[i+3]*x[i+3];
+        // if (isnan(soma) || isinf(soma))
+        // {
+        //     fprintf(stderr, "Erro soma(calcularNormaL2Residuo): %g é NaN ou +/-Infinito\n", soma);
+        //     exit(1);
+        // }
+
+    }
+    soma = soma_v[0] + soma_v[1] + soma_v[2] + soma_v[3]; 
+    for(; i < SL->n; ++i)
+        soma = soma + x[i]*x[i];
+        
+    raiz = sqrt(soma);
+    *tempo = timestamp() - *tempo;
+
+    // Retorna a raíz quadrada da soma.
+    return raiz;
+
+}
 
 
 // real_t *calcularAtxB(SistLinear_t *SL) {

@@ -153,17 +153,6 @@ real_t **alocarMatriz(unsigned int n, unsigned int k, unsigned int tam_ptr, unsi
 }
 
 
-// void cpyMatriz(real_t**dest, real_t**ori, unsigned int n) {
-
-//     for (int i = 0; i < n; ++i){
-//         for (int j = 0; j < n; ++j) {
-//             dest[i][j] = ori[i][j];
-//         }
-//     }
-    
-// }
-
-
 void cpyVetor(real_t *dest, real_t *orig, unsigned int *tam)
 {
 
@@ -261,14 +250,14 @@ void multiplicarMatrizPorVetor(SistLinear_t *SL, real_t *v, real_t *resultado) {
 
 void multiplicarVetorPorVetor(real_t* restrict v1, real_t* restrict v2, unsigned int *n){
 
-    int i;
-    for (i = 0; i < *(n)-*(n)%UNROLL; i += UNROLL){
+    int i = 0;
+    for (; i < *(n)-*(n)%UNROLL; i += UNROLL){
         v1[i] = v2[i] * v1[i];
         v1[i + 1] = v2[i + 1] * v1[i + 1];
         v1[i + 2] = v2[i + 2] * v1[i + 2];
         v1[i + 3] = v2[i + 3] * v1[i + 3];
     }
-    for (i; i < *(n); ++i)
+    for (; i < *(n); ++i)
         v1[i] = v2[i] * v1[i];
     
     // if (isnan(b[i]) || isinf(b[i]))
@@ -299,15 +288,15 @@ void multiplicarVetorPorMatriz(real_t *vetor, SistLinear_t *SL){
 
 }
 
-// void prnVetor (FILE* arq_saida, real_t *v, unsigned int n)
-// {
-//     int i;
+void prnVetor (FILE* arq_saida, real_t *v, unsigned int n)
+{
+    int i;
 
-//     fprintf (arq_saida, "\n");
-//     for(i=0; i < n; ++i)
-//         fprintf (arq_saida, "%.15g ", v[i]);
-//     fprintf (arq_saida, "\n\n");
+    fprintf (arq_saida, "\n");
+    for(i=0; i < n; ++i)
+        fprintf (arq_saida, "%.15g ", v[i]);
+    fprintf (arq_saida, "\n\n");
 
-// }
+}
 
 

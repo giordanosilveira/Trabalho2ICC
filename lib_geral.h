@@ -153,14 +153,14 @@ void multiplicarVetorPorVetor(real_t* restrict v1, real_t* restrict v2, unsigned
 // void calcularMxA(real_t **A, real_t *M, unsigned int n);
 
 
-// /**
-//  * @brief Printa o vetor específicado
-//  * 
-//  * @param arq_saida (FILE*) : Onde será printado a saída formatada pedida pelo professor
-//  * @param v (real_t*) : Vetor.
-//  * @param n (unsigned int n) : Tamanho do vetor.
-//  */
-// void prnVetor (FILE* arq_saida, real_t *v, unsigned int n);
+/**
+ * @brief Printa o vetor específicado
+ * 
+ * @param arq_saida (FILE*) : Onde será printado a saída formatada pedida pelo professor
+ * @param v (real_t*) : Vetor.
+ * @param n (unsigned int n) : Tamanho do vetor.
+ */
+void prnVetor (FILE* arq_saida, real_t *v, unsigned int n);
 
 
 

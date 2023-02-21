@@ -130,22 +130,26 @@ int main(int argc, char *argv[])
     fprintf(arq_saida, "# grpp19 Gabriel Razzolini Pires de Paula\n\n");
 
     SL = alocarSisLin(tamanhoSL, k_diagonais, pre_condicionador);
-    initSistLinear(SL);
-    SLTransp = calcularTransposta(SL);
+    x = (real_t*)alocarVetor(SL->n, sizeof(real_t));
+    residuo = (real_t*)alocarVetor(SL->n, sizeof(real_t));
 
-    tornarDiagonalDominante(SLTransp);
+    initSistLinear(SL);
+    tornarDiagonalDominante(SL);
+    
+    SLTransp = calcularTransposta(SL);
 
     gradienteConjugadosCPreCondicionadores(arq_saida, SL, SLTransp, x, &tempo_metodo, &tempo_preparacao, ERRO_IT, nInteracoes);
 
-    calcularResiduo(SL->A, residuo, SL->b, x, SL->n);
+    calcularResiduo(SL, residuo, x, SL->n);
     real_t norma_residuo = calcularNormaL2Residuo(SL, residuo, &tempo_residuo);
 
     fprintf(arq_saida, "# resíduo: %.15g\n", norma_residuo);
     fprintf(arq_saida, "# Tempo PC: %.15g\n", tempo_preparacao);
     fprintf(arq_saida, "# Tempo iter: %.15g\n", tempo_metodo);
     fprintf(arq_saida, "# Tempo norma: %.15g\n", tempo_residuo);
-    
-    //liberar estruturar
+    prnVetor(arq_saida, x, (unsigned int)SL->n);
+
+    //liberar estruturaras
     fclose(arq_saida);
     liberarSisLin(SL);
     liberarSisLin(SLTransp);

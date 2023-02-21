@@ -39,30 +39,17 @@ static inline void calcularNovaSolucao(real_t *x0, real_t *x, real_t *d, real_t 
 
 }
 
-
-/**
- * @brief Calcula o novo resíduo. Ou seja, Rk' = Rk - s*A*D.
- * Também guarda o resíduo antigo em 'R0'.
- * 
-
-
-
-
- * @param SL (SistLinear_t *) : O Sistema Linear.
- */
-
 /**
  * @brief Calcula o novo resíduo. Ou seja, Rk' = Rk - s*A*D.
  * Também guarda o resíduo antigo em 'R0'.
  * 
  * @param r0 (real_t*) : Guarda o resíduo antigo.
  * @param r (real_t*) : Guarda o resíduo atual.
- * @param d (real_t*) : Próxima direção (chamado de 'v' no livro da M.Cristina C. Cunha).
  * @param y (real_t*) : Vetor que é resultado da multiplicação de A*dk.
  * @param escalarA (real_t) : Escalar A (chamado de 's' no livro da M.Cristina C. Cunha).
  * @param n (unsigned int*) : Tamanho dos vetores
  */
-static inline void calcularNovoResiduo(real_t *r0, real_t *r, real_t *d, real_t *y, real_t escalarA, unsigned int *n) {
+static inline void calcularNovoResiduo(real_t *r0, real_t *r, real_t *y, real_t escalarA, unsigned int *n) {
 
     //Percorre a matriz dos coeficientes
     int i = 0;
@@ -119,50 +106,31 @@ static inline void calcula_z(real_t* restrict z, real_t* restrict inverse_c, rea
  * @param escalarM (real_t) : Escalar M.
  * @param n (unsigned int*) : Tamanho dos vetores.
  */
-static inline void calcularProxDirecao(real_t *d, real_t *v, real_t escalarM, unsigned int *n) {
+static inline void calcularProxDirecao(real_t * restrict d, real_t * restrict z, real_t escalarM, unsigned int *n) {
 
     int i = 0;
     for (; i < (*n)-(*n)%UNROLL; i += UNROLL){
-        d[i] = escalarM*d[i] + v[i];
-        d[i+1] = escalarM*d[i+1] + v[i+1];
-        d[i+2] = escalarM*d[i+2] + v[i+2];
-        d[i+3] = escalarM*d[i+3] + v[i+3];
+        d[i] = escalarM*d[i] + z[i];
+        d[i+1] = escalarM*d[i+1] + z[i+1];
+        d[i+2] = escalarM*d[i+2] + z[i+2];
+        d[i+3] = escalarM*d[i+3] + z[i+3];
     }
     for(; i < (*n); ++i)
-        d[i] = escalarM*d[i] + v[i];
+        d[i] = escalarM*d[i] + z[i];
 
 }
 
-
-// real_t calcularNormaL2Residuo(SistLinear_t *SL, real_t *x, real_t *tempo)
-// {
-
-//     real_t soma = 0.0;
-//     real_t raiz;
-
-//     // Pecorre o vetor de soluções
-//     *tempo = timestamp();
-//     for (int i = 0; i < SL->n; ++i) {
-
-//         // Soma o quadrado dos elementos das soluções
-//         soma = soma + x[i]*x[i];
-//         if (isnan(soma) || isinf(soma))
-//         {
-//             fprintf(stderr, "Erro soma(calcularNormaL2Residuo): %g é NaN ou +/-Infinito\n", soma);
-//             exit(1);
-//         }
-
-//     }
-//     raiz = sqrt(soma);
-//     *tempo = timestamp() - *tempo;
-
-//     // Retorna a raíz quadrada da soma.
-//     return raiz;
-
-// }
-
-
-void inverse_jacobi_preconditioner(SistLinear_t *SL, real_t *M)
+/**
+ * @brief Calcula a inversa do pré-condicionador de Jacobi, isto é: M⁻¹
+ * 
+ * @link https://math-linux.com/mathematics/linear-systems/article/preconditioned-conjugate-gradient-method
+ * 
+ * @param SL (SistLinear_t*) : O sistema linear.
+ * @param M (real_t*) : Vetor contendo a diagonal principal do Sistema Linear original
+ * 
+ * @return (real_t) : Matriz inversa de C, C⁻¹.
+ */
+static inline void inverse_jacobi_preconditioner(SistLinear_t *SL, real_t *M)
 {
 
     int i;
@@ -177,7 +145,29 @@ void inverse_jacobi_preconditioner(SistLinear_t *SL, real_t *M)
 
 }
 
+/**
+ * @brief 
+ * 
+ * @param x 
+ * @param x0 
+ * @param maior_erro_max_abs 
+ * @param tam 
+ */
+static inline void normaMaxErroAbsoluto(real_t *x, real_t *x0, real_t *maior_erro_max_abs, unsigned int *tam)
+{
 
+    *maior_erro_max_abs = ABS(x[0] - x0[0]);
+
+    // Percorre o vetor de soluções,
+    for (int i = 1; i < *(tam); ++i){
+
+        // o maior erro absoluto.
+        if (ABS(x[i] - x0[i]) > *maior_erro_max_abs)
+            *maior_erro_max_abs = ABS(x[i] - x0[i]);
+
+    }
+
+}
 
 
 int gradienteConjugadosCPreCondicionadores(FILE*arq_saida, SistLinear_t *SL, SistLinear_t *SLTransposto, real_t *x, real_t* tempo_metodo, real_t *tempo_preparacao, real_t erro, int nInteracoes) {
@@ -212,7 +202,7 @@ int gradienteConjugadosCPreCondicionadores(FILE*arq_saida, SistLinear_t *SL, Sis
     (*tempo_preparacao) = timestamp() - (*tempo_preparacao);
 
     cpyVetor(grad->vetor_r, SL->b, &SL->n);                                 //Inicializa o resíduo 'r0' com SL->b (O X inicial é 0)
-    calcula_z(vetor_z, matrix_M, grad->vetor_r, SL->n);                     //Inicializa 'z0'
+    calcula_z(vetor_z, matrix_M, grad->vetor_r, &SL->n);                     //Inicializa 'z0'
     cpyVetor(grad->vetor_d, vetor_z, &SL->n);                               //Inicializa 'd0' 
     
     int i = 0;
@@ -226,21 +216,24 @@ int gradienteConjugadosCPreCondicionadores(FILE*arq_saida, SistLinear_t *SL, Sis
 
 
         // Calcula o novo valor de 'x' e guarda o antigo em 'x0'
-        calcularNovaSolucao(grad->vetor_x0, x, grad->vetor_d, grad->escalarA, SL->n);
+        calcularNovaSolucao(grad->vetor_x0, x, grad->vetor_d, grad->escalarA, &SL->n);
+
+        normaMaxErroAbsoluto(x, grad->vetor_x0, &max_erro_abs_aprox, &SL->n);
+        fprintf(arq_saida, "# ||%10g||\n", max_erro_abs_aprox);
 
         // Calcula o resíduo atual e copia o resíduo anterior
-        calcularNovoResiduo(grad->vetor_r0, grad->vetor_r, grad->vetor_d, vetor_y, grad->escalarA, &SLTranspXSL->n);
+        calcularNovoResiduo(grad->vetor_r0, grad->vetor_r, vetor_y, grad->escalarA, &SLTranspXSL->n);
 
         //Z0 anterior
         cpyVetor(vetor_z0, grad->vetor_r, &SL->n);
 
         //Calcula novo z
-        calcula_z(vetor_z, matrix_M, grad->vetor_r, SL->n);
+        calcula_z(vetor_z, matrix_M, grad->vetor_r, &SL->n);
 
         //Calcula escalar M
         grad->escalarM = multiplicarVtxV(vetor_z, grad->vetor_r, &SL->n)/multiplicarVtxV(vetor_z0, grad->vetor_r0, &SL->n);
 
-        calcularProxDirecao(grad->vetor_d, vetor_z, grad->escalarM, SL->n);
+        calcularProxDirecao(grad->vetor_d, vetor_z, grad->escalarM, &SL->n);
 
         tempo_final = timestamp() - tempo_inicial;
         *tempo_metodo += tempo_final;

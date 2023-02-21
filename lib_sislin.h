@@ -55,16 +55,26 @@ Gradiente_t* alocarGradiente(unsigned int n);
 void tornarDiagonalDominante(SistLinear_t *SL);
 
 
-// /**
-//  * @brief Calcula o resíduo.
-//  * 
-//  * @param coef (real_t**) : Coeficientes do sistema linear.
-//  * @param residuo (real_t*) : Vetor onde será colocado o resíduo.
-//  * @param b (real_t*) : Termos independentes.
-//  * @param x (real_t*) : Vetor com as soluções.
-//  * @param n (unsigned int) : Tamanho do vetor.
-//  */
-// void calcularResiduo(real_t**coef, real_t *residuo, real_t*b, real_t *x, int n);
+/**
+ * @brief 
+ * 
+ * @param SL 
+ * @param residuo 
+ * @param x 
+ * @param n 
+ */
+void calcularResiduo(SistLinear_t *SL, real_t *residuo, real_t *x, int n);
+
+
+/**
+ * @brief Calcula a norma L2 do vetor com as soluções 'x'
+ * 
+ * @param tempo (real_t*) : Ponteiro onde será guardado o tempo do cálculo da norma.
+ * @param SL (SistLinear_t*) : O sistema linear.
+ * @param x (real_t*) : O Vetor com as soluções
+ * @return (real_t) : Norma L2 do vetor. 
+ */
+real_t calcularNormaL2Residuo(SistLinear_t *SL, real_t *x, real_t *tempo);
 
 
 // /**
