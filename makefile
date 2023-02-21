@@ -1,13 +1,31 @@
-CC=gcc
-CFLAGS=-Wall -g
-SISLIN=-DSISLIN
-PROG=cgSolver_v2
-OBJS=lib_geral_v2.o lib_gradiente_v2.o lib_sislin_v2.o $(PROG).o
+CC=gcc -g
 
-all: $(PROG)
+PROGV1=cgSolver_v1
+PROGV2=cgSolver_v2
+
+CFLAGS=-Wall -g -I${LIKWID_INCLUDE} -DLIKWID_PERFMON -O3 -mavx2 -march=native
+LFLAGS=-lm
+LIKWIDFLAGS = -L${LIKWID_LIB} -llikwid
+
+SISLIN=-DSISLIN
+
+OBJSV1=lib_geral_v1.o lib_gradiente_v1.o lib_sislin_v1.o $(PROGV1).o
+OBJSV2=lib_geral_v2.o lib_gradiente_v2.o lib_sislin_v2.o $(PROGV2).o
+
+all: $(PROGV1) $(PROGV2)
 
 sislin: CFLAGS += $(SISLIN)
 sislin: all
+
+lib_geral_v1.o: lib_geral_v1.c lib_geral_v1.h lib_sislin_v1.h
+	$(CC) $(CFLAGS) -c lib_geral_v1.c -lm
+
+lib_gradiente_v1.o: lib_gradiente_v1.c lib_gradiente_v1.h lib_geral_v1.h lib_sislin_v1.h
+	$(CC) $(CFLAGS) -c lib_gradiente_v1.c -lm
+
+lib_sislin_v1.o: lib_sislin_v1.c lib_sislin_v1.h
+	$(CC) $(CFLAGS) -c lib_sislin_v1.c -lm
+
 
 lib_geral_v2.o: lib_geral_v2.c lib_geral_v2.h lib_sislin_v2.h
 	$(CC) $(CFLAGS) -c lib_geral_v2.c -lm
@@ -18,12 +36,15 @@ lib_gradiente_v2.o: lib_gradiente_v2.c lib_gradiente_v2.h lib_geral_v2.h lib_sis
 lib_sislin_v2.o: lib_sislin_v2.c lib_sislin_v2.h
 	$(CC) $(CFLAGS) -c lib_sislin_v2.c -lm
 
-$(PROG): $(OBJS)
+$(PROGV1): $(OBJSV1)
+	$(CC) $(CFLAGS) -o $@ $^ -lm
+
+$(PROGV2): $(OBJSV2)
 	$(CC) $(CFLAGS) -o $@ $^ -lm
 
 clean:
 	rm -f *.o *.bak
 
 purge: clean
-	rm -f $(PROG)
+	rm -f $(PROGV1) $(PROGV2)
  
