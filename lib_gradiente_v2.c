@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "lib_geral.h"
-#include "lib_gradiente.h"
-#include "lib_sislin.h"
+#include "lib_geral_v2.h"
+#include "lib_gradiente_v2.h"
+#include "lib_sislin_v2.h"
 
 
 /**

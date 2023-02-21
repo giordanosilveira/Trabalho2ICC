@@ -4,8 +4,8 @@
 #include <time.h>
 #include <math.h>
 #include <string.h>
-#include "lib_geral.h"
-#include "lib_sislin.h"
+#include "lib_geral_v2.h"
+#include "lib_sislin_v2.h"
 
 double timestamp(void)
 {

@@ -1,22 +1,22 @@
 CC=gcc
 CFLAGS=-Wall -g
 SISLIN=-DSISLIN
-PROG=cgSolver
-OBJS=lib_geral.o lib_gradiente.o lib_sislin.o $(PROG).o
+PROG=cgSolver_v2
+OBJS=lib_geral_v2.o lib_gradiente_v2.o lib_sislin_v2.o $(PROG).o
 
 all: $(PROG)
 
 sislin: CFLAGS += $(SISLIN)
 sislin: all
 
-lib_geral.o: lib_geral.c lib_geral.h lib_sislin.h
-	$(CC) $(CFLAGS) -c lib_geral.c -lm
+lib_geral_v2.o: lib_geral_v2.c lib_geral_v2.h lib_sislin_v2.h
+	$(CC) $(CFLAGS) -c lib_geral_v2.c -lm
 
-lib_gradiente.o: lib_gradiente.c lib_gradiente.h lib_geral.h lib_sislin.h
-	$(CC) $(CFLAGS) -c lib_gradiente.c -lm
+lib_gradiente_v2.o: lib_gradiente_v2.c lib_gradiente_v2.h lib_geral_v2.h lib_sislin_v2.h
+	$(CC) $(CFLAGS) -c lib_gradiente_v2.c -lm
 
-lib_sislin.o: lib_sislin.c lib_sislin.h
-	$(CC) $(CFLAGS) -c lib_sislin.c -lm
+lib_sislin_v2.o: lib_sislin_v2.c lib_sislin_v2.h
+	$(CC) $(CFLAGS) -c lib_sislin_v2.c -lm
 
 $(PROG): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ -lm

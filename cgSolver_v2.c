@@ -3,9 +3,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <float.h>
-#include "lib_geral.h"
-#include "lib_sislin.h"
-#include "lib_gradiente.h"
+#include "lib_geral_v2.h"
+#include "lib_sislin_v2.h"
+#include "lib_gradiente_v2.h"
     //gradienteConjugadosCPreCondicionadores(arq_saida, SL, SLTransp, x, residuo, nInteracoes);
     
     // prnSisLin(stdout, SL);
