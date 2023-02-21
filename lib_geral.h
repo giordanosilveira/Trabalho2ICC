@@ -1,10 +1,12 @@
 #ifndef _LIB_GERAL_
 #define _LIB_GERAL_
 
-#define N_FLAGS 6     // Número max de flags permitidas
-#define TAM_SL_MIN 3 // Tamanho mínimo do sistema linear
-#define ERRO_MIN 0.0  // erro mínimo permitido (exclusive)
-#define ERRO_MAX 1.0  // erro máximo permitido (exclusive)
+#define N_FLAGS 6       // Número max de flags permitidas
+#define TAM_SL_MIN 3    // Tamanho mínimo do sistema linear
+#define ERRO_MIN 0.0    // erro mínimo permitido (exclusive)
+#define ERRO_MAX 1.0    // erro máximo permitido (exclusive)
+#define ERRO_IT -1.0    // erro para testar o número de iterações
+#define UNROLL 4        // Unroll
 
 // Módulo de um número
 #define ABS(num) ((num) < 0.0 ? -(num) : (num))
@@ -42,19 +44,12 @@ int verificarArgumentos(int *flags, char *argumentosFaltantes);
  */
 int validarArgumentos(char **argumentos, int *tamanhoSL, int *k_diagonais, int *nInteracoes, int *pre_condicionador, real_t *erro);
 
-// /**
-//  * @brief Se for possível, libera o vetor 'v'
-//  * 
-//  * @param v (void *) : vetor para ser liberado.
-//  */
-// void liberarVetor(void *v);
-
-// /**
-//  * @brief Libera a matriz 'matriz' se possível.
-//  * 
-//  * @param matriz (real_t*) : Matriz para ser liberada.
-//  */
-// void liberarMatriz(real_t **matriz);
+/**
+ * @brief Se for possível, libera o vetor 'v'
+ * 
+ * @param v (void *) : vetor para ser liberado.
+ */
+void liberarVetor(void *v);
 
 
 /**
@@ -69,16 +64,6 @@ int validarArgumentos(char **argumentos, int *tamanhoSL, int *k_diagonais, int *
 real_t **alocarMatriz(unsigned int n, unsigned int k, unsigned int tam_ptr, unsigned int tam_ele);
 
 
-// /**
-//  * @brief Copia os elementos da matriz origem (ori)
-//  * para a matriz destino (dest)
-//  * 
-//  * @param dest (real_t**) : Matriz destino.
-//  * @param ori (real_t**) : Matriz origem.
-//  * @param n (unsigned int) : Tamanho da matriz.
-//  */
-// void cpyMatriz(real_t**dest, real_t**ori, unsigned int n);
- 
 /**
  * @brief Aloca um vetor genério na memória.
  *
@@ -99,16 +84,55 @@ void *alocarVetor(int tamanho, int size);
  */
 void cpyVetor(real_t *orig, real_t *dest, unsigned int *tam);
 
-// /**
-//  * @brief Calcula o vetor transposto 'vt' pelo vetor 'v'. Isso resulta em uma
-//  * matriz 1x1, ou seja, um número real.
-//  *
-//  * @param vt (real_t*) : Vetor com o vt.
-//  * @param v (real_t*) : Vetor v (pode não ser usado)
-//  * @param tam (int*) : Ponteiro que indica o tamanho do vetor do resíduo.
-//  * @return (real_t) : Numerador para o cálculo do alfa.
-//  */
-// real_t multiplicarVtxV(real_t *vt, real_t *v, unsigned int *tam);
+
+/**
+ * @brief Calcula o vetor transposto 'vt' pelo vetor 'v'. Isso resulta em uma
+ * matriz 1x1, ou seja, um número real.
+ * 
+ * @param vt 
+ * @param tam 
+ * @return real_t 
+ */
+real_t multiplicarMesmoVtxV(real_t *vt, unsigned int *tam);
+
+
+/**
+ * @brief Calcula o vetor transposto 'vt' pelo vetor 'v'. Isso resulta em uma
+ * matriz 1x1, ou seja, um número real.
+ *
+ * @param vt (real_t*) : Vetor com o vt.
+ * @param v (real_t*) : Vetor v (pode não ser usado)
+ * @param tam (int*) : Ponteiro que indica o tamanho do vetor do resíduo.
+ * @return (real_t) : Numerador para o cálculo do alfa.
+ */
+real_t multiplicarVtxV(real_t* restrict vt, real_t* restrict v, unsigned int *tam);
+
+
+/**
+ * @brief 
+ * 
+ * @param SL 
+ * @param v 
+ * @param resultado 
+ */
+void multiplicarMatrizPorVetor(SistLinear_t *SL, real_t *v, real_t *resultado);
+
+/**
+ * @brief 
+ * 
+ * @param vetor 
+ * @param SL 
+ */
+void multiplicarVetorPorMatriz(real_t *vetor, SistLinear_t *SL);
+
+/**
+ * @brief 
+ * 
+ * @param v1 
+ * @param v2 
+ * @param n 
+ */
+void multiplicarVetorPorVetor(real_t* restrict v1, real_t* restrict v2, unsigned int *n);
 
 // /**
 //  * @brief multiplica a matriz M (vetor com a diagonal principal) com um vetor 'b'.

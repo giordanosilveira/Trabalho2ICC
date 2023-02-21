@@ -111,6 +111,9 @@ void initSistLinear(SistLinear_t *sistl) {
         ++k; 
     }
 
+    for (int i = 0; i < sistl->n; ++i)
+        sistl->b[i] = generateRandomB(sistl->k);
+
 }
 
 /**
@@ -160,106 +163,60 @@ SistLinear_t* calcularTransposta(SistLinear_t *original) {
 }
 
 
-// void liberarGradientes(Gradiente_t *grad){
+void liberarGradientes(Gradiente_t *grad){
 
-//     if (grad) {
-//         if (grad->aux_A[0])
-//             free(grad->aux_A[0]);
-//         if (grad->aux_A)
-//             free(grad->aux_A);
-//         if (grad->aux_b)
-//             free(grad->aux_b);
-//         if (grad->vetor_d)
-//             free(grad->vetor_d);
-//         if (grad->vetor_r)
-//             free(grad->vetor_r);
-//         if (grad->vetor_r0)
-//             free(grad->vetor_r0);
-//         if (grad->vetor_x0)
-//             free(grad->vetor_x0);
-//     }
-//     free(grad);
+    if (grad) {
 
-// }
-
-
-// Gradiente_t* alocarGradiente(unsigned int n) {
-
-//     Gradiente_t *grad = malloc(sizeof(Gradiente_t));
-//     if (grad) {
+        if (grad->vetor_d)
+            free(grad->vetor_d);
+        if (grad->vetor_r)
+            free(grad->vetor_r);
+        if (grad->vetor_r0)
+            free(grad->vetor_r0);
+        if (grad->vetor_x0)
+            free(grad->vetor_x0);
         
-//         grad->aux_A = alocarMatriz(n, sizeof(real_t*), sizeof(real_t));
+        free(grad);
 
-//         grad->aux_b = (real_t*)alocarVetor(n, sizeof(real_t));
-//         if (! grad->aux_b) {
-//             fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
-//             free(grad->aux_b);
-//             exit(1);
-//         }
-//         grad->vetor_d = (real_t*)alocarVetor(n, sizeof(real_t));
-//         if (! grad->vetor_d) {
-//             fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
-//             free(grad->aux_b);
-//             free(grad->vetor_d);
-//             exit(1);
-//         }
-//         grad->vetor_r0 = (real_t*)alocarVetor(n, sizeof(real_t));
-//         if (! grad->vetor_r0) {
-//             fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
-//             free(grad->aux_b);
-//             free(grad->vetor_d);
-//             free(grad->vetor_r0);
-//             exit(1);
-//         }
-//         grad->vetor_r = (real_t*)alocarVetor(n, sizeof(real_t));
-//         if (! grad->vetor_r) {
-//             fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
-//             free(grad->aux_b);
-//             free(grad->vetor_d);
-//             free(grad->vetor_r0);
-//             free(grad->vetor_r);
-//             exit(1);
-//         }
-//         grad->vetor_x0 = (real_t*)alocarVetor(n, sizeof(real_t));
-//         if (! grad->vetor_x0) {
-//             fprintf(stderr, "Não foi possível alocar espaço na memória para o vetor\n");
-//             free(grad->aux_b);
-//             free(grad->vetor_d);
-//             free(grad->vetor_r0);
-//             free(grad->vetor_r);
-//             free(grad->vetor_x0);
-//             exit(1);
-//         }
-//     }
-//     return grad;
+    }
 
-// }
+}
 
 
-// void tornarDiagonalDominante(SistLinear_t *SL) {
+Gradiente_t* alocarGradiente(unsigned int n) {
 
-//     real_t soma;
+    Gradiente_t *grad = malloc(sizeof(Gradiente_t));
+    if (grad) {
 
-//     int i = 0;
-//     while (i < (SL->k / 2) + 1) {
-//         soma = 0.0;
-//         for (int j = 0; j <= (SL->k / 2) + i; ++j) {
-//             soma = soma + SL->A[i][j];
-//         }
-//         SL->A[i][i] = soma + 1.0;
-//         ++i;
-//     }
+        grad->vetor_d = (real_t*)alocarVetor(n, sizeof(real_t));
+        grad->vetor_r = (real_t*)alocarVetor(n, sizeof(real_t));
+        grad->vetor_r0 = (real_t*)alocarVetor(n, sizeof(real_t));
+        grad->vetor_x0 = (real_t*)alocarVetor(n, sizeof(real_t));
 
-//     int m = 1;
-//     for (i = (SL->k / 2) + 1; i < SL->n; ++i){
-//         soma = 0.0;
-//         for (int j = m; j <= SL->k + m && j < SL->n; ++j){
-//             soma = soma + SL->A[i][j];
-//         }
-//         ++m;
-//         SL->A[i][i] = soma + 1.0;
-//     }
-// }
+        if (!grad->vetor_d || !grad->vetor_r || !grad->vetor_r0 || !grad->vetor_x0) {
+            fprintf(stderr, "Erro ao alocar as estruturas do gradiente\n");
+            liberarGradientes(grad);
+        }
+
+        return grad;
+    }
+
+    return grad;
+}
+
+
+void tornarDiagonalDominante(SistLinear_t *SL) {
+
+    int i = 0;
+    int j;
+    real_t soma = 0.0;
+    for (; i < SL->n; ++i){
+        for (j = 0; j < SL->k; ++j)
+            soma += SL->A[i][j];
+        SL->A[i][SL->k / 2] = soma;
+    }
+    
+}
 
 
 // void calcularResiduo(real_t**coef, real_t *residuo, real_t*b, real_t *x, int n)
@@ -382,6 +339,7 @@ void prnSisLin(FILE* arq_saida, SistLinear_t *SL)
     {
         for (int j = 0; j < SL->k; ++j)
             fprintf(arq_saida, "%10g ", SL->A[i][j]);
+        fprintf(arq_saida, "|%10g ", SL->b[i]);
         fprintf(arq_saida, "\n");
     }     
     fprintf(arq_saida, "\n\n");
