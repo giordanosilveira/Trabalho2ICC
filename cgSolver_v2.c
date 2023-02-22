@@ -152,6 +152,8 @@ int main(int argc, char *argv[])
 
     LIKWID_MARKER_STOP("calc_residue_OTIM"); // Likwid stopper calc_residue
 
+    LIKWID_MARKER_CLOSE; // Shutdown Likwid Markers
+
     fprintf(arq_saida, "# resíduo: %.15g\n", norma_residuo);
     fprintf(arq_saida, "# Tempo PC: %.15g\n", tempo_preparacao);
     fprintf(arq_saida, "# Tempo iter: %.15g\n", tempo_metodo);
