@@ -10,6 +10,8 @@ versions = ["v1", "v2"]
 
 print(f"Pegando valor {keys_groups[0]} do arquivo {sizes[0]}_{groups[0]}_{versions[0]}.csv")
 df = pd.read_csv(f"32_L3_v1.csv")
+print("Arquivo Lido")
+print(df)
 valor = df.loc[df[keys_groups[0]]].values[0]
 with open('L3.csv', 'w') as f:
     f.write(f"{key_groups[0]}: {valor}")
