@@ -15,7 +15,7 @@ print(df)
 valor_1 = df.loc[df['STRUCT'] == keys_groups[0]].values[0] # primeiro parametro
 valor_2 = df.loc[df['STRUCT'] == keys_groups[0]].values[1] # segundo parametro
 novo_df = pd.DataFrame({ 'parametro': ["conj_grad"], 'valor': [valor_1]},
-                       {'parametro': ["resiude"], 'valor': [valor_2]})
+                       {'parametro2': ["resiude"], 'valor': [valor_2]})
 novo_df.to_csv('saida.csv', index=False)
 
 
