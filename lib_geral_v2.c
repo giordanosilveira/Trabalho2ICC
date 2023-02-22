@@ -191,10 +191,10 @@ real_t multiplicarMesmoVtxV(real_t *vt, unsigned int *tam) {
 
 real_t multiplicarVtxV(real_t* restrict vt, real_t* restrict v, unsigned int *tam) {
     
-    int i;
+    int i = 0;
     real_t soma = 0.0;
     real_t soma_v[UNROLL] = {0.0,0.0,0.0,0.0};
-    for (int i = 0; i < *(tam)-*(tam) % UNROLL; i += UNROLL){
+    for (; i < *(tam)-*(tam) % UNROLL; i += UNROLL){
         soma_v[0] += vt[i] * v[i];
         soma_v[1] += vt[i + 1] * v[i + 1];
         soma_v[2] += vt[i + 2] * v[i + 2];
