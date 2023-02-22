@@ -3,9 +3,9 @@ METRICA="L3 L2CACHE FLOPS_DP" # Metrics for Likwid Markers
 
 SIZE="32 64" # Size of matrix nxn where SIZE=n
 
-if [ -f 32_L3_v1_.csv ]; then
-    rm *.csv && echo -e ".csv files cleaned" # Cleaning previous log files
-fi
+# if [ -f 32_L3_v1_.csv ]; then
+#     rm *.csv && echo -e ".csv files cleaned" # Cleaning previous log files
+# fi
 
 echo -e "\n> Make purge:" && make purge
 

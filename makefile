@@ -43,7 +43,7 @@ $(PROGV2): $(OBJSV2)
 	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS) $(LIKWIDFLAGS)
 
 clean:
-	rm -f *.o *.bak
+	rm -f *.o *.bak *.csv *.tmp
 
 purge: clean
 	rm -f $(PROGV1) $(PROGV2)
