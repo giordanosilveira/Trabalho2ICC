@@ -12,11 +12,11 @@ print(f"Pegando valor {keys_groups[0]} do arquivo {sizes[0]}_{groups[0]}_{versio
 df = pd.read_csv(f"32_L3_v1.csv")
 print("Arquivo Lido")
 print(df)
-valor = df.loc[df['STRUCT'] == keys_groups[0]].values[0]
-with open('L3.csv', 'w') as f:
-    f.write(f"{keys_groups[0]}: {valor}")
-print("Done")
-
+valor_1 = df.loc[df['STRUCT'] == keys_groups[0]].values[0] # primeiro parametro
+valor_2 = df.loc[df['STRUCT'] == keys_groups[0]].values[1] # segundo parametro
+novo_df = pd.DataFrame({ 'parametro': ["Metodo_Sem_Otimizacao"], 'valor': [valor_1]}
+                       {'parametro': ["Metodo_Sem_Otimizacao"], 'valor': [valor_2]})
+novo_df.to_csv('saida.csv', index=False)
 
 
 
