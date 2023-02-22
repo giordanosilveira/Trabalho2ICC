@@ -29,7 +29,7 @@ value_4 = valor_4[1]  # Extract Desired value from numpy array
 
 
 novo_df = pd.DataFrame({'size': [sizes[0]], 'conj_grad_SEM_OTIM': [value_1], 'residue_SEM_OTIM':[value_2],
-                        'conj_grad_COM_OTIM': [], 'residue_COM_OTIM': []})
+                        'conj_grad_COM_OTIM': [value_3], 'residue_COM_OTIM': [value_4]})
 novo_df.to_csv('saida.csv', index=False)
 
 
