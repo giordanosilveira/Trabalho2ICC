@@ -1,7 +1,7 @@
 #!/bin/bash
 METRICA="L3 L2CACHE FLOPS_DP" # Metrics for Likwid Markers
 
-SIZE="32 64 128 256 512 1000" # Size of matrix nxn where SIZE=n
+SIZE="32 64" # Size of matrix nxn where SIZE=n
 
 if [ -f *.csv ]; then
     rm *.csv && echo -e ".csv files cleaned" # Cleaning previous log files
@@ -9,7 +9,7 @@ fi
 
 echo -e "\n> Make purge:" && make purge
 
-echo -e "\n> Compiling..." && make
+echo -e "\n> Compiling..." && make all
 
 echo -e "\n> Running FIRST version, cgsolver_v1:\n"
 

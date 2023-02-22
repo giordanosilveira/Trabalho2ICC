@@ -1,4 +1,3 @@
-#include "lib_sislin_v2.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -6,7 +5,7 @@
 #include <float.h>
 #include <math.h>
 #include "lib_geral_v2.h"
-
+#include "lib_sislin_v2.h"
 
 /***********************
  * Função que gera os coeficientes de um sistema linear k-diagonal
