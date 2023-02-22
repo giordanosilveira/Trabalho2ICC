@@ -4,23 +4,33 @@ import subprocess
 
 # grupos = {"L3": "\nL3 bandwidth [MBytes/s]", "L2CACHE": "\nL2 miss ratio", "FLOPS_DP": "\nDP MFLOP/s", "\nAVX DP MFLOP/s"}
 groups = ["L3", "L2CACHE", "FLOPS_DP"]
-keys_groups = ["L3 bandwidth [MBytes/s]", "L2 miss ratio", "DP MFLOP/s", "AVX DP MFLOP/s"]
+keys_groups = ["L3 bandwidth [MBytes/s]",
+               "L2 miss ratio", "DP MFLOP/s", "AVX DP MFLOP/s"]
 sizes = [32, 64]
 versions = ["v1", "v2"]
 # tamanhos = [64, 100, 128, 1024, 2000, 2048]  # sizes of matrix nxn, where size=n
 
 print(f"Pegando valor {keys_groups[0]} do arquivo {sizes[0]}_{groups[0]}_{versions[0]}.csv")
-df = pd.read_csv(f"32_L3_v1.csv")
-print("Arquivo Lido")
-print(df)
-valor_1 = df.loc[df['STRUCT'] == keys_groups[0]].values[0] # primeiro parametro, conj_grad
-value_1 = valor_1[1] # Extract Desired value from numpy array
-valor_2 = df.loc[df['STRUCT'] == keys_groups[0]].values[1] # segundo parametro, residue
-value_2 = valor_2[1] # Extract Desired value from numpy array
-novo_df = pd.DataFrame({'size': [sizes[0]], 'conj_grad': [value_1], 'residue': [value_2]})
+df = pd.read_csv(f"32_L3_v1.csv")  # Read Pandas File, not optimized
+valor_1 = df.loc[df['STRUCT'] == keys_groups[0]
+                 ].values[0]  # primeiro parametro, conj_grad
+value_1 = valor_1[1]  # Extract Desired value from numpy array
+valor_2 = df.loc[df['STRUCT'] == keys_groups[0]
+                 ].values[1]  # segundo parametro, residue
+value_2 = valor_2[1]  # Extract Desired value from numpy array
+
+df2 = pd.read_csv(f"novo_arquivo.csv")  # Read Pandas File, optimized
+valor_3 = df2.loc[df2['STRUCT'] == keys_groups[0]
+                 ].values[0]  # primeiro parametro, conj_grad
+value_3 = valor_3[1]  # Extract Desired value from numpy array
+valor_4 = df2.loc[df2['STRUCT'] == keys_groups[0]
+                 ].values[1]  # segundo parametro, residue
+value_4 = valor_4[1]  # Extract Desired value from numpy array
+
+
+novo_df = pd.DataFrame({'size': [sizes[0]], 'conj_grad_SEM_OTIM': [value_1], 'residue_SEM_OTIM':[value_2],
+                        'conj_grad_COM_OTIM': [], 'residue_COM_OTIM': []})
 novo_df.to_csv('saida.csv', index=False)
-
-
 
 
 # lista = list()
