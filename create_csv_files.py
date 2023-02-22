@@ -91,16 +91,19 @@ novo_df.to_csv(f"TIME.csv", index=False)
 print(f"==> File TIME.csv Created Successfully\n")
 
 
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 # Generate plots
-# arquivos = [("FLOPS_DP", "DP MFLOPS/s"), ("TIME", "TEMPO"), ("L3", "L3 bandwidth [MBytes/s]"), ("L2CACHE", "L2 miss ratio")]
-# for arq in arquivos:
-#     df = pd.read_csv(f"{arq[0]}.csv")
-#     plt.figure(figsize=(10, 3.7))
-#     plt.plot(df["Tamanho"], df["t_matmat"], 'r', label="ColunaMatrizxMatriz")
-#     plt.plot(df["Tamanho"], df["t_matvet"], 'g', label="ColunaMatrizxVetor")
-#     plt.xlabel('Tamanho')
-#     plt.ylabel(f'{arq[1]}')
-#     plt.legend(loc='upper left', frameon=False)
-#     plt.title(f"{arq[0]}", loc='left')
-#     plt.savefig(f'{arq[0]}.png')
+arquivos = [("FLOPS_DP", "DP MFLOPS/s"), ("TIME", "TEMPO"), ("L3", "L3 bandwidth [MBytes/s]"), ("L2CACHE", "L2 miss ratio"), ("FLOPS_AVX", "Packed DP MFLOP/s")]
+for arq in arquivos:
+    df = pd.read_csv(f"{arq[0]}.csv")
+    plt.figure(figsize=(10, 3.7))
+    plt.plot(df['SIZES'], df['conj_grad_SEM_OTIM'], 'r', label="conj_grad_SEM_OTIM")
+    plt.plot(df['SIZES'], df['residue_SEM_OTIM'], 'g', label="residue_SEM_OTIM")
+    plt.plot(df['SIZES'], df['conj_grad_COM_OTIM'], 'r', label="conj_grad_COM_OTIM")
+    plt.plot(df['SIZES'], df['residue_COM_OTIM'], 'g', label="residue_COM_OTIM")
+    plt.xlabel('SIZE')
+    plt.ylabel(f'{arq[1]}')
+    plt.yscale('log')
+    plt.legend(loc='upper left', frameon=False)
+    plt.title(f"{arq[0]}", loc='left')
+    plt.savefig(f'{arq[0]}.png')
