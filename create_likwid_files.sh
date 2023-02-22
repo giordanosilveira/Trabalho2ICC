@@ -1,7 +1,7 @@
 #!/bin/bash
 METRICA="L3 L2CACHE FLOPS_DP" # Metrics for Likwid Markers
 
-SIZE="32" # Size of matrix nxn where SIZE=n
+SIZE="32 64" # Size of matrix nxn where SIZE=n
 
 if [ -f *.csv ]; then
     rm *.csv && echo -e ".csv files cleaned" # Cleaning previous log files
