@@ -34,7 +34,7 @@ for group in groups:
         
         print(f"==> Pegando valor {param} do arquivo {size}_{group}_{versions[1]}.csv")
         df2 = pd.read_csv(f"{size}_{group}_{versions[1]}.csv")  # Read Pandas File, VERSION 2, optimized
-        print(f"==> File {{size}_{group}_{versions[1]}.csv} read")
+        print(f"==> File {size}_{group}_{versions[1]}.csv read")
         
         valor_3 = df2.loc[df2['STRUCT'] == params[0]].values[0]  # primeiro parametro, conj_grad
         conj_grad_COM_OTIM.append(valor_3[1])# Extract Desired value from numpy array
