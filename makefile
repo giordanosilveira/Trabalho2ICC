@@ -27,7 +27,7 @@ lib_sislin_v1.o: lib_sislin_v1.c lib_sislin_v1.h
 	$(CC) $(CFLAGS) -c lib_sislin_v1.c -lm
 
 $(PROGV1): $(OBJSV1)
-	$(CC) $(CFLAGS) -o $@ $^ -lm
+	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS) $(LIKWIDFLAGS)
 
 
 lib_geral_v2.o: lib_geral_v2.c lib_geral_v2.h lib_sislin_v2.h
@@ -40,7 +40,7 @@ lib_sislin_v2.o: lib_sislin_v2.c lib_sislin_v2.h
 	$(CC) $(CFLAGS) -c lib_sislin_v2.c -lm
 
 $(PROGV2): $(OBJSV2)
-	$(CC) $(CFLAGS) -o $@ $^ -lm
+	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS) $(LIKWIDFLAGS)
 
 clean:
 	rm -f *.o *.bak
