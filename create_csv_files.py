@@ -54,6 +54,42 @@ for group in groups:
     print(f"==> File {group}.csv Created Successfully\n")
 
 
+# Time
+conj_grad_SEM_OTIM = []
+residue_SEM_OTIM = []
+conj_grad_COM_OTIM = []
+residue_COM_OTIM = []  
+for size in sizes:
+    print(f"==> Pegando valor 'Runtime (RDTSC) [s]' do arquivo {size}_L3_{versions[0]}.csv")
+    df = pd.read_csv(f"{size}_L3_{versions[0]}.csv") # Example file
+    print(f"==> File {size}_L3_{versions[0]}.csv read")
+        
+    valor_1 = df.loc[ df['STRUCT'] == "Runtime (RDTSC) [s]" ].values[0]  # primeiro parametro, conj_grad
+    conj_grad_SEM_OTIM.append(valor_1[1]) # Extract Desired value from numpy array
+    print(f"==> List conj_grad_SEM_OTIM: {conj_grad_SEM_OTIM}")
+    
+    valor_2 = df.loc[ df['STRUCT'] == "Runtime (RDTSC) [s]" ].values[1]  # segundo parametro, residue
+    residue_SEM_OTIM.append(valor_2[1])  # Extract Desired value from numpy array
+    print(f"==> List residue_SEM_OTIM: {residue_SEM_OTIM}")
+    
+    print(f"==> Pegando valor 'Runtime (RDTSC) [s]' do arquivo {size}_L3_{versions[1]}.csv")
+    df2 = pd.read_csv(f"{size}_L3_{versions[1]}.csv")  # Read Pandas File, VERSION 2, optimized
+    print(f"==> File {size}_L3_{versions[1]}.csv read")
+    
+    valor_3 = df2.loc[df2['STRUCT'] == "Runtime (RDTSC) [s]" ].values[0]  # primeiro parametro, conj_grad
+    conj_grad_COM_OTIM.append(valor_3[1])# Extract Desired value from numpy array
+    print(f"==> List conj_grad_COM_OTIM: {conj_grad_COM_OTIM}")
+    
+    valor_4 = df2.loc[df2['STRUCT'] == "Runtime (RDTSC) [s]" ].values[1]  # segundo parametro, residue
+    residue_COM_OTIM.append(valor_4[1])  # Extract Desired value from numpy array
+    print(f"==> List residue_COM_OTIM: {residue_COM_OTIM}")
+
+# Writing File
+print(f"\n==> Writing File TIME.csv")
+novo_df = pd.DataFrame({'SIZES': sizes, 'conj_grad_SEM_OTIM': conj_grad_SEM_OTIM, 'residue_SEM_OTIM': residue_SEM_OTIM, 'conj_grad_COM_OTIM': conj_grad_COM_OTIM, 'residue_COM_OTIM': residue_COM_OTIM})
+novo_df.to_csv(f"TIME.csv", index=False)
+print(f"==> File TIME.csv Created Successfully\n")
+
 
 # import matplotlib.pyplot as plt
 # Generate plots
