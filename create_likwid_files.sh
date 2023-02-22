@@ -27,7 +27,7 @@ done
 
 # sed -i '7 s/CFLAGS=-Wall -I${LIKWID_INCLUDE} -DLIKWID_PERFMON/CFLAGS=-Wall -I${LIKWID_INCLUDE} -DLIKWID_PERFMON -O3 -mavx2 -march=native/' makefile # Modify CFLAGS in makefile to add otimization flags
 
-echo -e "\n>Running SECOND version, cgsolver_v2:\n"
+echo -e "\n> Running SECOND version, cgsolver_v2:\n"
 
 echo "Compilation Result:"
 for k in $METRICA; do
