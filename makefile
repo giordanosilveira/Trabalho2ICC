@@ -12,7 +12,7 @@ SISLIN=-DSISLIN
 OBJSV1=lib_geral_v1.o lib_gradiente_v1.o lib_sislin_v1.o $(PROGV1).o
 OBJSV2=lib_geral_v2.o lib_gradiente_v2.o lib_sislin_v2.o $(PROGV2).o
 
-all: $(PROGV1) $(PROGV2)
+all: $(PROGV2) $(PROGV1)
 
 sislin: CFLAGS += $(SISLIN)
 sislin: all
