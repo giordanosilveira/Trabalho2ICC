@@ -13,13 +13,11 @@ print(f"Pegando valor {keys_groups[0]} do arquivo {sizes[0]}_{groups[0]}_{versio
 df = pd.read_csv(f"32_L3_v1.csv")
 print("Arquivo Lido")
 print(df)
-valor_1 = df.loc[df['STRUCT'] == keys_groups[0]].values[0] # primeiro parametro
-value_1 = valor_1[1] # Convert numpy array value desired to float
-print(type(value_1))
-valor_2 = df.loc[df['STRUCT'] == keys_groups[0]].values[1] # segundo parametro
-value_2 = valor_2[1] # Convert numpy array value desired to float
-print(type(value_2))
-novo_df = pd.DataFrame({'size': [sizes[0]], 'conj_grad': [value_1], 'residue': [valor_2]})
+valor_1 = df.loc[df['STRUCT'] == keys_groups[0]].values[0] # primeiro parametro, conj_grad
+value_1 = valor_1[1] # Extract Desired value from numpy array
+valor_2 = df.loc[df['STRUCT'] == keys_groups[0]].values[1] # segundo parametro, residue
+value_2 = valor_2[1] # Extract Desired value from numpy array
+novo_df = pd.DataFrame({'size': [sizes[0]], 'conj_grad': [value_1], 'residue': [value_2]})
 novo_df.to_csv('saida.csv', index=False)
 
 
