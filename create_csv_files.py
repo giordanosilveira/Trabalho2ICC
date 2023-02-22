@@ -12,8 +12,8 @@ print(f"Pegando valor {keys_groups[0]} do arquivo {sizes[0]}_{groups[0]}_{versio
 df = pd.read_csv(f"32_L3_v1.csv")
 print("Arquivo Lido")
 print(df)
-valor_1 = df.loc[df['STRUCT'] == keys_groups[0]].values.astype(float)[0] # primeiro parametro
-valor_2 = df.loc[df['STRUCT'] == keys_groups[0]].values.astype(float)[1] # segundo parametro
+valor_1 = df.loc[df['STRUCT'] == keys_groups[0]].values[0].astype(float)[1] # primeiro parametro
+valor_2 = df.loc[df['STRUCT'] == keys_groups[0]].values[1].astype(float)[1] # segundo parametro
 novo_df = pd.DataFrame({'size': [sizes[0]], 'conj_grad': [valor_1], 'residue': [valor_2]})
 novo_df.to_csv('saida.csv', index=False)
 
