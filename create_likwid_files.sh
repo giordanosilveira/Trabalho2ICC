@@ -32,7 +32,7 @@ echo -e "\n>Running SECOND version, cgsolver_v2:\n"
 echo "Compilation Result:"
 for k in $METRICA; do
     for s in $SIZE; do
-        likwid-perfctr -O -C 3 -g ${k} -m ./cgsolver_v2 -n $s -i 150 -k 7 -p 1 -o saida_v2.txt -d diagonal > ${s}_${k}_v2.csv
+        likwid-perfctr -O -C 3 -g ${k} -m ./cgSolver_v2 -n $s -i 150 -k 7 -p 1 -o saida_v2.txt -d diagonal > ${s}_${k}_v2.csv
         if [ -f ${s}_${k}_v2.csv ]; then
            echo -e "=> File ${s}_${k}_v2.csv Created Successfully."
         else
