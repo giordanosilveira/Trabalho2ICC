@@ -3,7 +3,7 @@ import subprocess
 
 # grupos = {"L3": "\nL3 bandwidth [MBytes/s]", "L2CACHE": "\nL2 miss ratio", "FLOPS_DP": "\nDP MFLOP/s", "\nAVX DP MFLOP/s"}
 groups = ["L3", "L2CACHE", "FLOPS_DP"]
-keys_groups = ["L3 bandwidth", "L2 miss ratio", "DP MFLOP/s", "AVX DP MFLOP/s"]
+keys_groups = ["L3 bandwidth [MBytes/s]", "L2 miss ratio", "DP MFLOP/s", "AVX DP MFLOP/s"]
 sizes = [32, 64]
 versions = ["v1", "v2"]
 # tamanhos = [64, 100, 128, 1024, 2000, 2048]  # sizes of matrix nxn, where size=n
@@ -12,7 +12,7 @@ print(f"Pegando valor {keys_groups[0]} do arquivo {sizes[0]}_{groups[0]}_{versio
 df = pd.read_csv(f"32_L3_v1.csv")
 print("Arquivo Lido")
 print(df)
-valor = df.loc[df[keys_groups[0]]].values[0]
+valor = df.loc[df['STRUCT'] == keys_groups[0]].values[0]
 with open('L3.csv', 'w') as f:
     f.write(f"{keys_groups[0]}: {valor}")
 print("Done")
