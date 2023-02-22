@@ -3,7 +3,7 @@ import subprocess
 
 # grupos = {"L3": "\nL3 bandwidth [MBytes/s]", "L2CACHE": "\nL2 miss ratio", "FLOPS_DP": "\nDP MFLOP/s", "\nAVX DP MFLOP/s"}
 groups = ["L3", "L2CACHE", "FLOPS_DP"]
-keys_groups = ["\nL3 bandwidth [MBytes/s]", "\nL2 miss ratio", "\nDP MFLOP/s", "\nAVX DP MFLOP/s"]
+keys_groups = ["L3 bandwidth [MBytes/s]", "L2 miss ratio", "DP MFLOP/s", "AVX DP MFLOP/s"]
 sizes = [32, 64]
 versions = ["v1", "v2"]
 # tamanhos = [64, 100, 128, 1024, 2000, 2048]  # sizes of matrix nxn, where size=n
