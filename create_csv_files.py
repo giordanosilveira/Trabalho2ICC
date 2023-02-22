@@ -2,57 +2,47 @@ import pandas as pd
 import numpy as np
 import subprocess
 
-# grupos = {"L3": "\nL3 bandwidth [MBytes/s]", "L2CACHE": "\nL2 miss ratio", "FLOPS_DP": "\nDP MFLOP/s", "\nAVX DP MFLOP/s"}
 groups = ["L3", "L2CACHE", "FLOPS_DP"]
-keys_groups = ["L3 bandwidth [MBytes/s]",
-               "L2 miss ratio", "DP MFLOP/s", "AVX DP MFLOP/s"]
+params = ["L3 bandwidth [MBytes/s]", "L2 miss ratio", "DP MFLOP/s", "AVX DP MFLOP/s"]
 sizes = [32, 64]
 versions = ["v1", "v2"]
-# tamanhos = [64, 100, 128, 1024, 2000, 2048]  # sizes of matrix nxn, where size=n
 
-print(f"Pegando valor {keys_groups[0]} do arquivo {sizes[0]}_{groups[0]}_{versions[0]}.csv")
-df = pd.read_csv(f"32_L3_v1.csv")  # Read Pandas File, not optimized
-valor_1 = df.loc[df['STRUCT'] == keys_groups[0]
-                 ].values[0]  # primeiro parametro, conj_grad
-value_1 = valor_1[1]  # Extract Desired value from numpy array
-valor_2 = df.loc[df['STRUCT'] == keys_groups[0]
-                 ].values[1]  # segundo parametro, residue
-value_2 = valor_2[1]  # Extract Desired value from numpy array
+print("==> Starting loop..\n")
+for group in groups:
+    conj_grad_SEM_OTIM = []
+    residue_SEM_OTIM = []
+    conj_grad_COM_OTIM = []
+    residue_COM_OTIM = []
+    for size in sizes:
+        if group == "L3":
+            param = params[0]
+        elif group == "L2CACHE":
+            param = params[1]
+        print(f"==> Group: {group}, Param: {param}.")              
+        print(f"==> Pegando valor {param} do arquivo {size}_{group}_{versions[0]}.csv")
+        df = pd.read_csv(f"{size}_{group}_{versions[0]}.csv")  # Read Pandas File, VERSION 1, not optimized
+        print(f"==> File {{size}_{group}_{versions[0]}.csv} read")
+        valor_1 = df.loc[ df['STRUCT'] == params[0] ].values[0]  # primeiro parametro, conj_grad
+        conj_grad_SEM_OTIM.append(valor_1[1]) # Extract Desired value from numpy array
+        print(f"==> List conj_grad_SEM_OTIM: {conj_grad_SEM_OTIM}")
+        valor_2 = df.loc[ df['STRUCT'] == params[0] ].values[1]  # segundo parametro, residue
+        residue_SEM_OTIM.append(valor_2[1])  # Extract Desired value from numpy array
+        print(f"==> List residue_SEM_OTIM: {residue_SEM_OTIM}")
+        
+        df2 = pd.read_csv(f"{size}_{group}_{versions[1]}.csv")  # Read Pandas File, VERSION 2, optimized
+        print(f"==> File {{size}_{group}_{versions[1]}.csv} read")
+        valor_3 = df2.loc[df2['STRUCT'] == params[0]].values[0]  # primeiro parametro, conj_grad
+        conj_grad_COM_OTIM.append(valor_3[1])# Extract Desired value from numpy array
+        print(f"==> List conj_grad_COM_OTIM: {conj_grad_COM_OTIM}")
+        valor_4 = df2.loc[df2['STRUCT'] == params[0]].values[1]  # segundo parametro, residue
+        residue_COM_OTIM.append(valor_4[1])  # Extract Desired value from numpy array
+        print(f"==> List residue_COM_OTIM: {residue_COM_OTIM}")
 
-df2 = pd.read_csv(f"novo_arquivo.csv")  # Read Pandas File, optimized
-valor_3 = df2.loc[df2['STRUCT'] == keys_groups[0]
-                 ].values[0]  # primeiro parametro, conj_grad
-value_3 = valor_3[1]  # Extract Desired value from numpy array
-valor_4 = df2.loc[df2['STRUCT'] == keys_groups[0]
-                 ].values[1]  # segundo parametro, residue
-value_4 = valor_4[1]  # Extract Desired value from numpy array
+    print(f"\n==> Writing File {group}.csv")
+    novo_df = pd.DataFrame({'SIZES': sizes, 'conj_grad_SEM_OTIM': conj_grad_SEM_OTIM, 'residue_SEM_OTIM': residue_SEM_OTIM, 'conj_grad_COM_OTIM': conj_grad_COM_OTIM, 'residue_COM_OTIM': residue_COM_OTIM})
+    novo_df.to_csv(f"{group}.csv", index=False)
+    print(f"==> File {group}.csv Created Successfully\n")
 
-
-novo_df = pd.DataFrame({'size': [sizes[0]], 'conj_grad_SEM_OTIM': [value_1], 'residue_SEM_OTIM':[value_2],
-                        'conj_grad_COM_OTIM': [value_3], 'residue_COM_OTIM': [value_4]})
-novo_df.to_csv('saida.csv', index=False)
-
-
-# lista = list()
-
-# print("Before the second loop of sizes")
-# for tam in sizes:
-#     with open(f"{tam}_{grupo[0]}.csv", "r") as arq:
-#         f = arq.read()
-#         f = f.split(',')
-#         lista.append([f[i + 1] for i, elemento in enumerate(f) if elemento == "\nRDTSC Runtime [s]"])
-#     lista[len(lista) - 1].insert(0, f"{tam}")
-#     with open(f"TIME.csv", 'w') as arq2:
-#         arq2.write("Tamanho, conj_grad_pre, calc_residue\n")
-#         for m in lista:
-#             arq2.write(f"{','.join(m)}\n")
-# print("After the second loop of sizes")
-
-# bashCommand = "rm *WITH*.csv" # Bash command
-# process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-# output, error = process.communicate()
-# print("Output: ", output)
-# print("Error: ", error)
 
 # import matplotlib.pyplot as plt
 # Generate plots
