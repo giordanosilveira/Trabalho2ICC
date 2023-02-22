@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import subprocess
 
 # grupos = {"L3": "\nL3 bandwidth [MBytes/s]", "L2CACHE": "\nL2 miss ratio", "FLOPS_DP": "\nDP MFLOP/s", "\nAVX DP MFLOP/s"}
@@ -13,10 +14,10 @@ df = pd.read_csv(f"32_L3_v1.csv")
 print("Arquivo Lido")
 print(df)
 valor_1 = df.loc[df['STRUCT'] == keys_groups[0]].values[0] # primeiro parametro
-valor_1 = valor_1[1].astype(float) # Convert numpy array value desired to float
+value_1 = valor_1[1].astype(float) # Convert numpy array value desired to float
 valor_2 = df.loc[df['STRUCT'] == keys_groups[0]].values[1] # segundo parametro
-valor_2 = valor_2[1].astype(float) # Convert numpy array value desired to float
-novo_df = pd.DataFrame({'size': [sizes[0]], 'conj_grad': [valor_1], 'residue': [valor_2]})
+value_2 = valor_2[1].astype(float) # Convert numpy array value desired to float
+novo_df = pd.DataFrame({'size': [sizes[0]], 'conj_grad': [value_1], 'residue': [valor_2]})
 novo_df.to_csv('saida.csv', index=False)
 
 
