@@ -14,7 +14,7 @@ print("Arquivo Lido")
 print(df)
 valor_1 = df.loc[df['STRUCT'] == keys_groups[0]].values[0] # primeiro parametro
 valor_2 = df.loc[df['STRUCT'] == keys_groups[0]].values[1] # segundo parametro
-print("Valor 1: ", valor_1)
+print("Valor 1: ", type(valor_1))
 novo_df = pd.DataFrame({'size': [sizes[0]], 'conj_grad': [valor_1], 'residue': [valor_2]})
 novo_df.to_csv('saida.csv', index=False)
 
