@@ -18,7 +18,7 @@ for k in $METRICA; do
      for s in $SIZE; do
          likwid-perfctr -O -C 3 -g ${k} -m ./cgSolver_v1 -n $s -i 150 -k 7 -p 1 -o saida_v1.txt -d diagonal > ${s}_${k}_v1.csv
          if [ -f ${s}_${k}_v1.csv ]; then
-           echo -e "=> File ${s}_${k}_v2.csv Created Successfully."
+           echo -e "=> File ${s}_${k}_v1.csv Created Successfully."
         else
             echo -e "X> Failed to create .csv file"
         fi
