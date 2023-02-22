@@ -4,7 +4,7 @@ import subprocess
 
 groups = ["L3", "L2CACHE", "FLOPS_DP", "FLOPS_AVX"]
 params = ["L3 bandwidth [MBytes/s]", "L2 miss ratio", "DP MFLOP/s", "Packed DP MFLOP/s"]
-sizes = [32, 64, 128, 256, 512, 1000]
+sizes = [32, 64, 128, 256, 512, 1000, 2000, 4000, 6000]
 versions = ["v1", "v2"]
 
 print("==> Starting loop.. for L3 and L2CACHE\n")

@@ -1,7 +1,7 @@
 #!/bin/bash
 METRICA="L3 L2CACHE FLOPS_DP FLOPS_AVX" # Metrics for Likwid Markers
 
-SIZE="32 64 128 256 512 1000" # Size of matrix nxn where SIZE=n
+SIZE="32 64 128 256 512 1000 2000 4000 6000" # Size of matrix nxn where SIZE=n
 
 # if [ -f 32_L3_v1_.csv ]; then
 #     rm *.csv && echo -e ".csv files cleaned" # Cleaning previous log files
