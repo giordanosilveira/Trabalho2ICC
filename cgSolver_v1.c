@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
 
         LIKWID_MARKER_INIT; // Init Likwid markers
 
-        LIKWID_MARKER_START("conj_grad_pre"); // Likwid starter conj_grad_pre
+        LIKWID_MARKER_START("conj_grad_pre_SEM_OTIM"); // Likwid starter conj_grad_pre
 
         time_passed = timestamp(); // Init of variable that counts time passed in function
 
@@ -186,14 +186,14 @@ int main(int argc, char *argv[])
         fclose(arq2);
 #endif
 
-        LIKWID_MARKER_STOP("conj_grad_pre"); // Likwid stopper conj_grad_pre
+        LIKWID_MARKER_STOP("conj_grad_pre_SEM_OTIM"); // Likwid stopper conj_grad_pre
 
-        LIKWID_MARKER_START("calc_residue"); // Likwid starter calc_residue
+        LIKWID_MARKER_START("calc_residue_SEM_OTIM"); // Likwid starter calc_residue
 
         calcularResiduo(SL->A, residuo, SL->b, x, SL->n);
         real_t norma_residuo = calcularNormaL2Residuo(SL, residuo, &tempo_norma);
 
-        LIKWID_MARKER_STOP("calc_residue"); // Likwid stopper calc_residue
+        LIKWID_MARKER_STOP("calc_residue_SEM_OTIM"); // Likwid stopper calc_residue
 
         LIKWID_MARKER_CLOSE; // Shutdown Likwid Markers
 

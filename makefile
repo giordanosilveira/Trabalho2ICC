@@ -3,7 +3,7 @@ CC=gcc -g
 PROGV1=cgSolver_v1
 PROGV2=cgSolver_v2
 
-CFLAGS=-Wall -g -I${LIKWID_INCLUDE} -DLIKWID_PERFMON -O3 -mavx2 -march=native
+CFLAGS=-Wall -I${LIKWID_INCLUDE} -DLIKWID_PERFMON -O3 -mavx2 -march=native
 LFLAGS=-lm
 LIKWIDFLAGS = -L${LIKWID_LIB} -llikwid
 
@@ -26,6 +26,9 @@ lib_gradiente_v1.o: lib_gradiente_v1.c lib_gradiente_v1.h lib_geral_v1.h lib_sis
 lib_sislin_v1.o: lib_sislin_v1.c lib_sislin_v1.h
 	$(CC) $(CFLAGS) -c lib_sislin_v1.c -lm
 
+$(PROGV1): $(OBJSV1)
+	$(CC) $(CFLAGS) -o $@ $^ -lm
+
 
 lib_geral_v2.o: lib_geral_v2.c lib_geral_v2.h lib_sislin_v2.h
 	$(CC) $(CFLAGS) -c lib_geral_v2.c -lm
@@ -35,9 +38,6 @@ lib_gradiente_v2.o: lib_gradiente_v2.c lib_gradiente_v2.h lib_geral_v2.h lib_sis
 
 lib_sislin_v2.o: lib_sislin_v2.c lib_sislin_v2.h
 	$(CC) $(CFLAGS) -c lib_sislin_v2.c -lm
-
-$(PROGV1): $(OBJSV1)
-	$(CC) $(CFLAGS) -o $@ $^ -lm
 
 $(PROGV2): $(OBJSV2)
 	$(CC) $(CFLAGS) -o $@ $^ -lm
