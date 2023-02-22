@@ -42,5 +42,5 @@ for k in $METRICA; do
 done
 echo -e "\nDone" # Script finished
 
-# echo -e "\nCalling create_csv_files.py...\n"
-# python3 create_csv_files.py
+echo -e "\nCalling create_csv_files.py...\n"
+python3 create_csv_files.py
