@@ -46,5 +46,5 @@ clean:
 	rm -f *.o *.bak *.csv *.tmp
 
 purge: clean
-	rm -f $(PROGV1) $(PROGV2)
+	rm -f $(PROGV1) $(PROGV2) *.png
  

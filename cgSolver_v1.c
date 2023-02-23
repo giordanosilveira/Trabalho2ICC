@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <float.h>
-#include "likwid.h"
+#include <likwid.h>
 #include "lib_geral_v1.h"
 #include "lib_sislin_v1.h"
 #include "lib_gradiente_v1.h"
