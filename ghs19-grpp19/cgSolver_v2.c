@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <float.h>
+#include "likwid.h"
 #include "lib_geral_v2.h"
 #include "lib_sislin_v2.h"
 #include "lib_gradiente_v2.h"
@@ -135,11 +136,25 @@ int main(int argc, char *argv[])
     tornarDiagonalDominante(SL);
     
     SLTransp = calcularTransposta(SL);
+
+
+    LIKWID_MARKER_INIT; // Init Likwid markers
+
+    LIKWID_MARKER_START("conj_grad_pre_OTIM"); // Likwid starter conj_grad_pre
     
     gradienteConjugadosCPreCondicionadores(arq_saida, SL, SLTransp, x, &tempo_metodo, &tempo_preparacao, ERRO_IT, nInteracoes);
 
+    LIKWID_MARKER_STOP("conj_grad_pre_OTIM"); // Likwid stopper conj_grad_pre
+
+    LIKWID_MARKER_START("calc_residue_OTIM"); // Likwid starter calc_residue
+
     calcularResiduo(SL, residuo, x, SL->n);
     real_t norma_residuo = calcularNormaL2Residuo(SL, residuo, &tempo_residuo);
+
+    LIKWID_MARKER_STOP("calc_residue_OTIM"); // Likwid stopper calc_residue
+
+    LIKWID_MARKER_CLOSE; // Shutdown Likwid Markers
+    
 
     fprintf(arq_saida, "# resíduo: %.15g\n", norma_residuo);
     fprintf(arq_saida, "# Tempo PC: %.15g\n", tempo_preparacao);

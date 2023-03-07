@@ -1,2 +1,2 @@
-# Trabalho1ICC
-Reposítorio para o trabalho 1 de ICC
+# Trabalho2ICC
+Reposítorio para o trabalho 2 de ICC
